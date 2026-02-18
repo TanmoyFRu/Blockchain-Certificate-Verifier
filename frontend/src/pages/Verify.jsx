@@ -1,7 +1,8 @@
 import React, { useState, useRef } from 'react';
 import api from '../services/api';
-import { ShieldCheck, Search, Activity, FileCheck, Database, Zap, Upload, ArrowRight, Check, Globe, FileText } from 'lucide-react';
+import { ShieldCheck, Search, Activity, FileCheck, Database, Zap, Upload, ArrowRight, Check, Globe, FileText, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { BasicDemo } from '../components/ui/image-comparison-demo';
 
 const Verify = () => {
     const [hash, setHash] = useState('');
@@ -44,7 +45,7 @@ const Verify = () => {
     };
 
     return (
-        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'hsl(var(--background))' }}>
             <nav style={{
                 height: '64px',
                 borderBottom: '1px solid hsl(var(--border))',
@@ -67,7 +68,7 @@ const Verify = () => {
                 </button>
             </nav>
 
-            <main style={{ flex: 1 }}>
+            <main style={{ flex: 1, paddingBottom: '8rem' }}>
                 <section style={{ padding: '8rem 2rem 4rem', textAlign: 'center', maxWidth: '800px', margin: '0 auto' }}>
                     <div style={{
                         display: 'inline-flex',
@@ -107,7 +108,7 @@ const Verify = () => {
                         Secure, open-source registry for accomplishments. Verify authenticity via cryptographic hashing and Polygon immutability.
                     </p>
 
-                    <div className="shad-card" style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'left', border: '1px solid hsla(var(--foreground), 0.1)' }}>
+                    <div className="shad-card" style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'left' }}>
                         <div style={{
                             display: 'flex',
                             gap: '1rem',
@@ -155,10 +156,10 @@ const Verify = () => {
                         <form onSubmit={handleVerify} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                             {verifyMode === 'hash' ? (
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                    <label style={{ fontSize: '13px', fontWeight: 600, color: 'hsl(var(--muted-foreground))' }}>CERTIFICATE HASH</label>
+                                    <label style={{ fontSize: '12px', fontWeight: 700, color: 'hsl(var(--muted-foreground))' }}>CREDENTIAL HASH</label>
                                     <input
                                         type="text"
-                                        placeholder="Enter 64-character SHA-256 hash..."
+                                        placeholder="Enter 64-character hash..."
                                         className="shad-input"
                                         value={hash}
                                         onChange={(e) => setHash(e.target.value)}
@@ -169,7 +170,6 @@ const Verify = () => {
                                 <div
                                     className="file-upload-area"
                                     onClick={() => fileInputRef.current?.click()}
-                                    style={{ position: 'relative' }}
                                 >
                                     <input
                                         type="file"
@@ -180,14 +180,14 @@ const Verify = () => {
                                     />
                                     {file ? (
                                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-                                            <FileText size={32} style={{ color: 'hsl(var(--primary))' }} />
-                                            <p style={{ fontSize: '14px', fontWeight: 600 }}>{file.name}</p>
-                                            <p style={{ fontSize: '12px', color: 'hsl(var(--muted-foreground))' }}>Click to change file</p>
+                                            <FileText size={40} style={{ color: 'hsl(var(--primary))' }} />
+                                            <p style={{ fontSize: '14px', fontWeight: 700 }}>{file.name}</p>
+                                            <p style={{ fontSize: '12px', color: 'hsl(var(--muted-foreground))' }}>Ready to verify</p>
                                         </div>
                                     ) : (
-                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-                                            <Upload size={32} style={{ color: 'hsl(var(--muted-foreground))' }} />
-                                            <p style={{ fontSize: '14px', fontWeight: 600 }}>Click to upload certificate</p>
+                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
+                                            <Upload size={40} style={{ color: 'hsl(var(--muted-foreground))' }} />
+                                            <p style={{ fontSize: '15px', fontWeight: 700 }}>Click to upload certificate</p>
                                             <p style={{ fontSize: '12px', color: 'hsl(var(--muted-foreground))' }}>Support for standard PDF format</p>
                                         </div>
                                     )}
@@ -197,29 +197,25 @@ const Verify = () => {
                                 type="submit"
                                 className="shad-btn shad-btn-primary"
                                 disabled={loading}
-                                style={{ height: '48px', gap: '0.75rem', width: '100%' }}
+                                style={{ height: '48px', width: '100%' }}
                             >
-                                {loading ? 'Verifying...' : (
-                                    <>Verify Credential <ArrowRight size={18} /></>
-                                )}
+                                {loading ? 'Verifying...' : 'Authenticate Credential'}
                             </button>
                         </form>
 
                         <AnimatePresence>
                             {error && (
                                 <motion.div
-                                    initial={{ opacity: 0, y: -10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, scale: 0.95 }}
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: 'auto' }}
                                     style={{
                                         marginTop: '1.5rem',
                                         padding: '1rem',
-                                        backgroundColor: 'hsla(var(--destructive), 0.1)',
-                                        border: '1px solid hsla(var(--destructive), 0.2)',
+                                        backgroundColor: 'hsla(0, 70%, 50%, 0.1)',
+                                        border: '1px solid hsla(0, 70%, 50%, 0.2)',
                                         borderRadius: 'var(--radius)',
                                         color: '#ff4444',
-                                        fontSize: '13px',
-                                        fontWeight: 500
+                                        fontSize: '13px'
                                     }}
                                 >
                                     {error}
@@ -229,51 +225,28 @@ const Verify = () => {
 
                         {data && (
                             <motion.div
-                                initial={{ opacity: 0, y: 20 }}
+                                initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                style={{
-                                    marginTop: '2.5rem',
-                                    paddingTop: '2rem',
-                                    borderTop: '1px solid hsl(var(--border))'
-                                }}
+                                style={{ marginTop: '2.5rem', paddingTop: '2rem', borderTop: '1px solid hsl(var(--border))' }}
                             >
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
-                                    <div style={{
-                                        width: '48px',
-                                        height: '48px',
-                                        borderRadius: '50%',
-                                        backgroundColor: 'hsla(22, 100%, 50%, 0.1)',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        border: '1px solid hsla(22, 100%, 50%, 0.2)'
-                                    }}>
-                                        <FileCheck color="#ff8800" size={24} />
+                                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'hsla(142, 70%, 50%, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid hsla(142, 70%, 50%, 0.2)' }}>
+                                        <Check color="#22c55e" size={24} />
                                     </div>
                                     <div>
-                                        <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Record Authenticated</h3>
-                                        <p style={{ fontSize: '12px', color: 'hsl(var(--muted-foreground))' }}>Confirmed via cryptographic signature</p>
+                                        <h3 style={{ fontSize: '18px', fontWeight: 800 }}>Record Verified</h3>
+                                        <p style={{ fontSize: '12px', color: 'hsl(var(--muted-foreground))' }}>Cryptographically signed on Polygon</p>
                                     </div>
                                 </div>
 
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-                                    <div style={{
-                                        padding: '1.25rem',
-                                        borderRadius: 'var(--radius)',
-                                        backgroundColor: 'hsla(var(--secondary), 0.4)',
-                                        border: '1px solid hsl(var(--border))'
-                                    }}>
-                                        <span style={{ fontSize: '11px', color: 'hsl(var(--muted-foreground))', textTransform: 'uppercase', fontWeight: 700 }}>Recipient</span>
-                                        <p style={{ fontSize: '15px', fontWeight: 600, marginTop: '0.5rem' }}>{data.local_record?.owner_name || 'Verified Recipient'}</p>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                    <div style={{ padding: '1.25rem', borderRadius: 'var(--radius)', backgroundColor: 'hsla(var(--secondary), 0.4)', border: '1px solid hsl(var(--border))' }}>
+                                        <span style={{ fontSize: '10px', color: 'hsl(var(--muted-foreground))', textTransform: 'uppercase', fontWeight: 800 }}>Recipient</span>
+                                        <p style={{ fontSize: '15px', fontWeight: 700, marginTop: '0.25rem' }}>{data.local_record?.owner_name}</p>
                                     </div>
-                                    <div style={{
-                                        padding: '1.25rem',
-                                        borderRadius: 'var(--radius)',
-                                        backgroundColor: 'hsla(var(--secondary), 0.4)',
-                                        border: '1px solid hsl(var(--border))'
-                                    }}>
-                                        <span style={{ fontSize: '11px', color: 'hsl(var(--muted-foreground))', textTransform: 'uppercase', fontWeight: 700 }}>Credential</span>
-                                        <p style={{ fontSize: '15px', fontWeight: 600, marginTop: '0.5rem' }}>{data.local_record?.course_name || 'Blockchain Record'}</p>
+                                    <div style={{ padding: '1.25rem', borderRadius: 'var(--radius)', backgroundColor: 'hsla(var(--secondary), 0.4)', border: '1px solid hsl(var(--border))' }}>
+                                        <span style={{ fontSize: '10px', color: 'hsl(var(--muted-foreground))', textTransform: 'uppercase', fontWeight: 800 }}>Credential</span>
+                                        <p style={{ fontSize: '15px', fontWeight: 700, marginTop: '0.25rem' }}>{data.local_record?.course_name}</p>
                                     </div>
                                 </div>
                             </motion.div>
@@ -281,7 +254,21 @@ const Verify = () => {
                     </div>
                 </section>
 
-                <section style={{ padding: '4rem 2rem 8rem', maxWidth: '1100px', margin: '0 auto' }}>
+                {/* Improved Visual Comparison Section */}
+                <section style={{ padding: '4rem 2rem', maxWidth: '800px', margin: '0 auto' }}>
+                    <div style={{ textAlign: 'left', marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: 'hsla(var(--primary), 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Sparkles size={20} color="white" />
+                        </div>
+                        <div>
+                            <h3 style={{ fontSize: '20px', fontWeight: 800 }}>Integrity Lens</h3>
+                            <p style={{ fontSize: '14px', color: 'hsl(var(--muted-foreground))' }}>Visual comparison of on-chain versus original data</p>
+                        </div>
+                    </div>
+                    <BasicDemo />
+                </section>
+
+                <section style={{ padding: '4rem 2rem', maxWidth: '1100px', margin: '0 auto' }}>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
                         {[
                             { icon: <Database />, title: 'Immutable Audit', desc: 'Tamper-proof record keeping powered by Polygon blockchain.' },
@@ -289,36 +276,26 @@ const Verify = () => {
                             { icon: <ShieldCheck />, title: 'Enterprise Secure', desc: 'Cryptographically signed certificates with SHA-256 standard.' }
                         ].map((feature, i) => (
                             <div key={i} className="shad-card" style={{ padding: '2.5rem' }}>
-                                <div style={{
-                                    width: '48px',
-                                    height: '48px',
-                                    borderRadius: '12px',
-                                    backgroundColor: 'hsla(var(--primary), 0.1)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    marginBottom: '1.5rem',
-                                    color: 'hsl(var(--primary))'
-                                }}>
+                                <div style={{ width: '48px', height: '48px', borderRadius: '12px', backgroundColor: 'hsla(var(--primary), 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem', color: 'hsl(var(--primary))' }}>
                                     {feature.icon}
                                 </div>
-                                <h4 style={{ fontWeight: 700, fontSize: '1.125rem', marginBottom: '0.75rem' }}>{feature.title}</h4>
-                                <p style={{ color: 'hsl(var(--muted-foreground))', fontSize: '14px', lineHeight: 1.6 }}>{feature.desc}</p>
+                                <h4 style={{ fontWeight: 800, fontSize: '18px', marginBottom: '0.75rem' }}>{feature.title}</h4>
+                                <p style={{ color: 'hsl(var(--muted-foreground))', fontSize: '14.5px', lineHeight: 1.6 }}>{feature.desc}</p>
                             </div>
                         ))}
                     </div>
                 </section>
             </main>
 
-            <footer style={{ padding: '4rem 2rem', borderTop: '1px solid hsl(var(--border))' }}>
-                <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '2rem' }}>
-                    <div style={{ fontSize: '14px', color: 'hsl(var(--muted-foreground))', fontWeight: 500 }}>
-                        © 2026 CertVerifier Protocol. Decentralized Trust.
+            <footer style={{ padding: '4rem 2rem', borderTop: '1px solid hsl(var(--border))', backgroundColor: 'hsla(var(--background), 0.5)' }}>
+                <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ fontSize: '14px', color: 'hsl(var(--muted-foreground))', fontWeight: 600 }}>
+                        © 2026 CertVerifier Protocol.
                     </div>
-                    <div style={{ display: 'flex', gap: '2rem', fontSize: '14px', color: 'hsl(var(--muted-foreground))' }}>
-                        <span style={{ cursor: 'pointer' }}>Documentation</span>
-                        <span style={{ cursor: 'pointer' }}>Privacy Policy</span>
-                        <span style={{ cursor: 'pointer' }}>API Status</span>
+                    <div style={{ display: 'flex', gap: '2rem', fontSize: '14px', color: 'hsl(var(--muted-foreground))', fontWeight: 500 }}>
+                        <span>Terms</span>
+                        <span>Privacy</span>
+                        <span>Infrastructure</span>
                     </div>
                 </div>
             </footer>

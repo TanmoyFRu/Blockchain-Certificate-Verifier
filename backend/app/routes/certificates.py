@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
 from sqlalchemy.orm import Session
+import os
 from app.db.database import get_db
 from app.schemas.certificate import CertificateCreate, CertificateOut
 from app.models.certificate import Certificate
@@ -47,7 +48,6 @@ def verify_certificate(cert_hash: str, db: Session = Depends(get_db)):
     if not cert:
         raise HTTPException(status_code=404, detail="Certificate not found in local records")
     
-    # Optional blockchain check
     on_chain_data = blockchain_service.verify_on_chain(cert_hash)
     
     status = {
@@ -56,3 +56,19 @@ def verify_certificate(cert_hash: str, db: Session = Depends(get_db)):
     }
     
     return status
+
+@router.post("/verify-file")
+async def verify_certificate_file(file: UploadFile = File(...), db: Session = Depends(get_db)):
+    temp_path = f"storage/temp_{file.filename}"
+    with open(temp_path, "wb") as buffer:
+        buffer.write(await file.read())
+    
+    # Get hash
+    try:
+        file_hash = get_file_hash(temp_path)
+    finally:
+        # Clean up
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+    
+    return verify_certificate(file_hash, db)

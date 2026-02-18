@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import api from '../services/api';
-import { ShieldCheck, Search, Activity, Clock, FileCheck, Database, Zap } from 'lucide-react';
+import { ShieldCheck, Search, Activity, Clock, FileCheck, Database, Zap, Upload } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const Verify = () => {
     const [hash, setHash] = useState('');
+    const [file, setFile] = useState(null);
+    const [verifyMode, setVerifyMode] = useState('hash'); // 'hash' or 'file'
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -15,10 +17,19 @@ const Verify = () => {
         setError(null);
         setData(null);
         try {
-            const res = await api.get(`/certificates/verify/${hash}`);
+            let res;
+            if (verifyMode === 'hash') {
+                res = await api.get(`/certificates/verify/${hash}`);
+            } else {
+                const formData = new FormData();
+                formData.append('file', file);
+                res = await api.post('/certificates/verify-file', formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+            }
             setData(res.data);
         } catch (err) {
-            setError('Invalid hash or certificate not found');
+            setError(err.response?.data?.detail || 'Verification failed');
         } finally {
             setLoading(false);
         }
@@ -47,20 +58,49 @@ const Verify = () => {
                         <span style={{ color: '#6366f1' }}>On the Blockchain.</span>
                     </motion.h1>
                     <p style={{ color: '#94a3b8', fontSize: '1.2rem', marginBottom: '40px', maxWidth: '600px', margin: '0 auto 40px' }}>
-                        Instant, tamper-proof verification for academic and professional certificates using SHA-256 hashing and Polygon Blockchain technology.
+                        Instant, tamper-proof verification for certificates using SHA-256 and Blockchain technology.
                     </p>
 
+                    <div className="glass-card" style={{ padding: '6px', maxWidth: '500px', margin: '0 auto 30px', display: 'flex', gap: '4px' }}>
+                        <button
+                            onClick={() => { setVerifyMode('hash'); setData(null); setError(null); }}
+                            style={{ flex: 1, padding: '12px', borderRadius: '10px', border: 'none', cursor: 'pointer', background: verifyMode === 'hash' ? 'var(--primary)' : 'transparent', color: 'white', fontWeight: '600', transition: '0.3s' }}
+                        >
+                            Verify by ID/Hash
+                        </button>
+                        <button
+                            onClick={() => { setVerifyMode('file'); setData(null); setError(null); }}
+                            style={{ flex: 1, padding: '12px', borderRadius: '10px', border: 'none', cursor: 'pointer', background: verifyMode === 'file' ? 'var(--primary)' : 'transparent', color: 'white', fontWeight: '600', transition: '0.3s' }}
+                        >
+                            Verify by PDF Upload
+                        </button>
+                    </div>
+
                     <div className="glass-card" style={{ padding: '40px', maxWidth: '800px', margin: '0 auto' }}>
-                        <form onSubmit={handleVerify} style={{ display: 'flex', gap: '12px' }}>
-                            <input
-                                type="text"
-                                placeholder="Enter 64-character Certificate Hash"
-                                className="input-field"
-                                value={hash}
-                                onChange={(e) => setHash(e.target.value)}
-                                required
-                            />
-                            <button type="submit" className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap' }}>
+                        <form onSubmit={handleVerify} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                            {verifyMode === 'hash' ? (
+                                <input
+                                    type="text"
+                                    placeholder="Enter 64-character Certificate Hash"
+                                    className="input-field"
+                                    value={hash}
+                                    onChange={(e) => setHash(e.target.value)}
+                                    required
+                                />
+                            ) : (
+                                <div style={{ border: '2px dashed var(--glass-border)', borderRadius: '16px', padding: '40px', textAlign: 'center', background: 'rgba(255,255,255,0.02)' }}>
+                                    <Upload size={32} color="#6366f1" style={{ marginBottom: '16px' }} />
+                                    <input
+                                        type="file"
+                                        accept=".pdf"
+                                        onChange={(e) => setFile(e.target.files[0])}
+                                        style={{ display: 'block', margin: '0 auto 10px' }}
+                                        required
+                                    />
+                                    <p style={{ color: '#94a3b8', fontSize: '14px' }}>Upload the original certificate PDF to verify its hash</p>
+                                </div>
+                            )}
+                            <button type="submit" className="btn-primary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                                 <Search size={18} /> {loading ? 'Verifying...' : 'Verify Certificate'}
                             </button>
                         </form>
@@ -76,11 +116,11 @@ const Verify = () => {
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', textAlign: 'left' }}>
                                     <div className="glass-card" style={{ padding: '20px' }}>
                                         <p style={{ color: '#94a3b8', fontSize: '12px', textTransform: 'uppercase' }}>Recipient</p>
-                                        <p style={{ fontSize: '18px', fontWeight: '600' }}>{data.local_record.owner_name}</p>
+                                        <p style={{ fontSize: '18px', fontWeight: '600' }}>{data.local_record?.owner_name || 'Verified Link'}</p>
                                     </div>
                                     <div className="glass-card" style={{ padding: '20px' }}>
                                         <p style={{ color: '#94a3b8', fontSize: '12px', textTransform: 'uppercase' }}>Credential Name</p>
-                                        <p style={{ fontSize: '18px', fontWeight: '600' }}>{data.local_record.course_name}</p>
+                                        <p style={{ fontSize: '18px', fontWeight: '600' }}>{data.local_record?.course_name || 'Authentic Record'}</p>
                                     </div>
                                 </div>
 
@@ -95,7 +135,7 @@ const Verify = () => {
                                         </div>
                                         <div style={{ textAlign: 'right' }}>
                                             <p style={{ fontSize: '12px', color: '#94a3b8' }}>Issue Date</p>
-                                            <p style={{ fontSize: '14px' }}>{new Date(data.local_record.created_at).toLocaleDateString()}</p>
+                                            <p style={{ fontSize: '14px' }}>{data.local_record ? new Date(data.local_record.created_at).toLocaleDateString() : 'Confirmed'}</p>
                                         </div>
                                     </div>
                                 </div>

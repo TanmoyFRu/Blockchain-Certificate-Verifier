@@ -1,0 +1,67 @@
+# 21st.dev Component Library
+
+21st.dev is an open-source **community registry of React UI components** built with Tailwind CSS and Radix UI【44†L318-L322】. It provides *minimal, modern, and customizable* building blocks for web apps【44†L348-L352】. The library includes **marketing sections** (Hero banners, CTAs, feature grids, navbars, testimonials, etc.) and **functional UI components** (forms, tables, cards, alerts, buttons, toggles, etc.)【5†L64-L73】【45†L18-L27】. For example, 21st.dev’s “Marketing Blocks” category has hero and CTA layouts, while “UI Components” covers inputs, tables, tabs, modals, date-pickers, and more【5†L64-L73】【45†L18-L27】. All components come pre-styled (light/dark mode) and TypeScript-ready. In practice, we can quickly copy/paste 21st.dev components (e.g. hero section, sign-in form, data table) into our React app to accelerate development.
+
+# UI Patterns: Certificate Verification & Dashboard
+
+- **Certificate Verification Flows:** Modern verification UIs typically let users **upload a certificate file or enter/scan a code/QR** to check authenticity. Real-world examples embed a *unique code or QR* on each certificate that links to a verification page【20†L368-L374】【16†L7-L13】. For instance, Moodle’s certificate templates include a 10-digit code or a QR that points to the issuer’s verification URL【20†L368-L374】. Similarly, Certifier’s example uses an auto-generated QR code on each certificate to direct verifiers to an online check【16†L7-L13】. In our frontend, we’d mirror this by offering a **File Upload** component (or drag‑and‑drop) plus an input field for a certificate ID/QR. After submission, the app recalculates the hash (or reads the code) and displays the result in a result card or alert. Valid certificates show a green badge/icon and details (name, course, date), while tampered ones trigger a red error alert. UX best practices (from AWS case studies) suggest **supporting both manual upload and automated ingestion** – e.g. allow drag‑drop of a PDF *and* also provide an “or enter code” option【47†L122-L129】. Feedback should be immediate (show a spinner while verifying) and clear: e.g. a toast or alert saying “Certificate is valid” or “Invalid certificate” with details.
+
+- **Admin Dashboard Flows:** The admin interface should follow **dashboard best practices**. Experts recommend starting with a high-level overview and letting users drill into details【22†L197-L201】. A dashboard is typically card-based, where each card might show a key stat, chart, or link【22†L142-L150】. For example, one card could display *“Total Certificates Issued”*, another *“Pending Verifications”*, with small inline charts or progress bars. Quick filters/toggles (e.g. time ranges) and alerts (e.g. security warnings) should be prominent. As Justinmind notes, dashboards should show only *relevant data at a glance*【22†L197-L201】. In our case, we might include cards for “Certificates Issued (last 7 days)”, “Verification Success Rate”, etc., and tables of recent activity. Each card or graph can use 21st.dev components (like Radix Popover or Tooltip for details) plus a chart library (e.g. Chart.js) for visualization. Below is an example analytics dashboard layout for inspiration:
+
+【34†embed_image】 *Figure: Example admin analytics dashboard with multiple charts and metrics.* 
+
+# Frontend Feature Concepts
+
+Below are 6–8 key frontend feature ideas (with 21st.dev components) for the certificate verifier app:
+
+- **Home / Landing Page:** Use a **Hero section** (21st.dev Hero components) with a headline like “Instant Certificate Verification” and call-to-action buttons (e.g. “Verify Now” or “Admin Login”)【5†L64-L73】. Feature blocks (from 21st “Features” or “Calls to Action” category) can highlight benefits (fast, secure, tamper-proof). A simple navbar (21st Navigation) should let users log in or go to the public verify page. *Tasks:* choose a Hero/CTA component, customize text, hook the CTA button to the Verify page or Login page.
+
+- **Authentication (Sign In / Sign Up):** Leverage 21st.dev’s **Sign In/Sign Up** form templates (found under “Sign Ins” and “Sign ups” categories【45†L24-L28】【5†L64-L73】) for user authentication. The login form will POST credentials to the FastAPI `/auth/login` endpoint and store the returned JWT. Use 21st `Input`, `Button`, and `Alert` components for the form fields and error messages. *Tasks:* implement JWT-based auth, protect routes; style the form with 21st styles; redirect successful login to admin dashboard.
+
+- **Certificate Verification Page:** Provide a dedicated page with a 21st **File Upload** component (or a styled drag‑drop area) and a text input for a certificate code. For example, 21st.dev has “File Uploads” components【45†L22-L27】 that can be customized. On submit, the page calls FastAPI’s `/verify` endpoint with the uploaded PDF or code. While waiting, show a 21st spinner/loader. Then display the result in a 21st **Card**: include the certificate holder’s name, issuance date, issuer, plus a green check Badge if valid or red Badge if invalid. Use 21st **Alert** or **Toast** for status messages. *Tasks:* integrate `FileUpload` with an `<input type="file">`, handle file in React state, call backend, parse JSON response, update UI components accordingly. 
+
+- **Certificate Issuance Form (Admin):** Create a form for admins to issue new certificates. Use 21st `Form` components with fields: text inputs (name, course, etc.), a `DatePicker` for issuance date【45†L22-L27】, toggles/checkboxes for optional settings (e.g. “Revocable”), and a submit `Button`. On submit, send a POST to FastAPI `/certificates` (or `/issue`) with the certificate data. Optionally generate the PDF on the fly (calling backend) and show a preview link. Use a 21st **Dialog/Modal** to confirm submission or show errors. *Tasks:* assemble the form using 21st Inputs and Buttons, connect to FastAPI endpoint, implement backend PDF generation, and display success (via 21st Toast) with certificate link.
+
+- **Certificates Management Table:** Build an admin table listing all issued certificates. Use 21st’s **Table** component【45†L23-L28】 with columns: ID, Recipient, Course, Date, Status, and Actions. Incorporate 21st `Pagination` and `Search` (Input) to filter by name or ID. In the Actions column, use a 21st **Dropdown** or **Popover** to hold actions like “View Details” or “Revoke” for each row. A revoke action could pop up a 21st **Dialog** to confirm. *Tasks:* fetch data from `GET /certificates`, feed it into the table, implement search filter by calling the API with a query param, and implement row actions (calling backend revoke endpoint). Display any errors with 21st `Alert`.
+
+- **Analytics Dashboard:** Present key metrics using charts and cards. Each metric card can use 21st **Badge** or **Avatar** for icons and text labels. For data visualization, integrate a chart library (since 21st.dev doesn’t include charts natively) into 21st **Cards**. For example, a card might show a line chart of “Certificates Issued per Month” or a pie chart of “Valid vs Invalid”. Use 21st `Tabs` to switch between time ranges or data categories. *Tasks:* create a `/dashboard` route that fetches stats from FastAPI (e.g. `/stats/issued`, `/stats/verified`), render charts inside 21st-styled containers, and update in real time if needed. This dashboard follows best practices of summarizing data (cards, charts) and offering drill-down【22†L142-L150】【22†L197-L201】.
+
+- **Notifications / Logs Page:** Implement a page to show verification/logging events (who verified what and when). Use 21st **Accordion** or **Timeline** patterns to organize logs by date or user. 21st.dev has “Accordions” and “Lists” that can serve this. Each entry could use an **Avatar** (logo) and text description. *Tasks:* record events on the backend (e.g. in a `logs` table) and fetch them via `/logs`; display them in the UI with expandable 21st Accordion panels or a Table. 
+
+- **Organization/User Management (Advanced):** If supporting multiple issuers, include an admin page to manage organizations and team members. Use 21st Forms and Tables similar to above (e.g. a table of users with roles and a form to add new users). This is a stretch goal beyond MVP.
+
+# MVP vs Full Product
+
+- **MVP (Core) Features:**  
+  1. **Authentication:** Sign up/login (JWT-based) – protect issuer/admin pages.  
+  2. **Verify Page:** Upload certificate or enter code; show result.  
+  3. **Issue Certificate:** Admin form to create new certificates.  
+  4. **Certificate List:** Table of issued certificates with search/filter.  
+  5. **Basic UI:** Layout (header/nav/sidebar) and styling using 21st.dev themes.
+
+  *Key Tasks:* Set up React Router for pages; integrate 21st.dev components for forms and tables; implement FastAPI endpoints (`/auth/login`, `/certificates`, `/verify`); handle JWT on frontend; test end-to-end flows.
+
+- **Full Product (Advanced) Features:**  
+  1. **Analytics Dashboard:** Charts of issuance/verifications (requires additional APIs).  
+  2. **Revocation System:** Ability to revoke certificates (with on-chain flag), UI for it.  
+  3. **QR Code Scanning:** Mobile camera integration to scan certificate QR.  
+  4. **Notifications:** Real-time alerts or email notifications on new verifications.  
+  5. **Multi-Organization Support:** UI to register/manage multiple issuers (access control).  
+  6. **Audit Logs:** View history of all verifications in UI.  
+  7. **Polish & Responsive UI:** Dark mode, mobile layout, animations.
+
+  *Key Tasks:* After MVP, add 21st.dev **Tabs, Badges, Toasts** for new features. Create backend APIs for stats and logs. Integrate chart libraries in React components. Use 21st **Toggle** for theme switch. Deploy UI to production (Docker/Nginx), and connect with smart contract backend.
+
+# Component-Level UI & Backend Integration
+
+- **Layout & Navigation:** Use a 21st.dev **Sidebar** or **Navbar** (Radix-based) for navigation links (Dashboard, Certificates, Verify, Logout). This can be a persistent component. Authentication state (JWT in memory or localStorage) determines which links to show (e.g. “Login” vs “Dashboard”).  
+- **Forms & Inputs:** All input fields (text, email, date) use 21st `Input`, `DatePicker`, `Checkbox`, etc. For example, the issue form would import 21st’s `Input` component for name/course, `DatePicker` for date, and a `Button` for submit. On submit, the React onSubmit handler calls **FastAPI** (e.g. `await fetch('/api/certificates', {method:'POST', headers, body: JSON.stringify(data)})`). Errors from the API are shown via 21st `Alert` or `Toast`.  
+- **File Upload & Verification:** For file upload, wrap a 21st Button and hidden `<input type="file">`. When a PDF is chosen, send it via `FormData` to `/api/verify` on FastAPI. Backend validates (recomputes hash on-chain) and returns JSON `{valid: true/false, details: {...}}`. The frontend then displays details inside a 21st `Card`, and shows a `Badge` or `Alert` colored green/red based on `{valid}`.  
+- **Tables & Lists:** Use 21st’s `Table` component for certificate lists and logs. For example, fetch `GET /api/certificates` and pass the array into the table. Use 21st’s `Pagination` component for paging results. Make each row’s action column use a 21st `Popover` or `Dropdown` for buttons like “Revoke” or “View”. Clicking “Revoke” could call `POST /api/certificates/{id}/revoke` and refresh the table.  
+- **Cards & Metrics:** The dashboard page uses 21st `Card` and `Badge`. For instance, a card might display **“Total Issued”** with a big number (21st `Badge` or styled text) and an icon (`Avatar`). Below that, embed a chart (e.g. `<canvas>` with Chart.js) showing trends. Data for these charts comes from endpoints like `/api/stats/issued`. 21st.dev can style the containers, but the chart itself is custom.  
+- **Feedback & Alerts:** Use 21st `Alert`, `Toast`, and `Badge` to notify users. For example, on successful certificate issue, show a “Success” toast; on invalid login, show an `Alert` at top of form. These components ensure consistency.  
+- **Integration Notes:** All API calls should include the JWT token (in `Authorization` header) for protected routes. CORS must be enabled on FastAPI for the React frontend domain. Handle loading states in the UI (with 21st spinners or disabling buttons). For file storage, the frontend doesn’t handle PDFs beyond upload (FastAPI can upload to S3/MinIO). The 21st.dev components integrate seamlessly: they just handle presentation, while the logic sits in React/JS and FastAPI.
+
+By combining 21st.dev’s ready-made UI blocks with careful flow design (as cited above), the frontend can be built quickly and look polished. The MVP focuses on core verify/issue features; then you layer in analytics, QR scanning, and multi-org support to evolve into a full product. Throughout, structure components so each page calls the appropriate FastAPI endpoint and displays data using 21st.dev’s tables, forms, and alerts for a modern, user-friendly interface【45†L18-L27】【22†L142-L150】. 
+
+**Sources:** Official docs and examples from 21st.dev【44†L318-L322】【45†L18-L27】【5†L64-L73】 and UI/UX best practices for certificates and dashboards【20†L368-L374】【16†L7-L13】【22†L142-L150】【22†L197-L201】【47†L122-L129】.

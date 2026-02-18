@@ -72,3 +72,8 @@ async def verify_certificate_file(file: UploadFile = File(...), db: Session = De
             os.remove(temp_path)
     
     return verify_certificate(file_hash, db)
+
+@router.get("/", response_model=list[dict])
+def list_certificates(org_id: int, db: Session = Depends(get_db)):
+    certs = db.query(Certificate).filter(Certificate.issued_by == org_id).order_by(Certificate.created_at.desc()).all()
+    return certs

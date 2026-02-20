@@ -7,6 +7,7 @@ class Organization(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False, unique=True)
+    domain = Column(String, nullable=True)
     wallet_address = Column(String, nullable=True)
 
     users = relationship("User", back_populates="organization")

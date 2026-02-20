@@ -1,5 +1,11 @@
 from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
+import bcrypt
+
+# Monkey patch for passlib + bcrypt compatibility
+if not hasattr(bcrypt, '__about__'):
+    bcrypt.__about__ = type('about', (object,), {'__version__': bcrypt.__version__})
+
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 from app.config.settings import settings

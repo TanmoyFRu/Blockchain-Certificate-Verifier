@@ -1,3 +1,4 @@
+<div align="center">
 
 ```
 ██╗   ██╗███████╗██████╗ ██╗██████╗ ██╗ ██████╗ ███╗   ██╗
@@ -8,6 +9,8 @@
   ╚═══╝  ╚══════╝╚═╝  ╚═╝╚═╝╚═════╝ ╚═╝ ╚═════╝ ╚═╝  ╚═══╝
             Blockchain Certificate Verification
 ```
+
+</div>
 
 Veridion is a next-generation, blockchain-powered certificate verification platform. It enables institutions to issue tamper-proof digital credentials that can be instantly verified by anyone, anywhere, without relying on a central authority.
 

@@ -1,155 +1,305 @@
 <div align="center">
 
 ```
-██╗   ██╗███████╗██████╗ ██╗██████╗ ██╗ ██████╗ ███╗   ██╗
-██║   ██║██╔════╝██╔══██╗██║██╔══██╗██║██╔═══██╗████╗  ██║
-██║   ██║█████╗  ██████╔╝██║██║  ██║██║██║   ██║██╔██╗ ██║
-╚██╗ ██╔╝██╔══╝  ██╔══██╗██║██║  ██║██║██║   ██║██║╚██╗██║
- ╚████╔╝ ███████╗██║  ██║██║██████╔╝██║╚██████╔╝██║ ╚████║
-  ╚═══╝  ╚══════╝╚═╝  ╚═╝╚═╝╚═════╝ ╚═╝ ╚═════╝ ╚═╝  ╚═══╝
-            Blockchain Certificate Verification
+ ██████╗██╗   ██╗██████╗ ██╗  ██╗██╗██████╗ ███████╗
+██╔════╝╚██╗ ██╔╝██╔══██╗██║  ██║██║██╔══██╗██╔════╝
+██║      ╚████╔╝ ██████╔╝███████║██║██████╔╝█████╗  
+██║       ╚██╔╝  ██╔═══╝ ██╔══██║██║██╔══██╗██╔══╝  
+╚██████╗   ██║   ██║     ██║  ██║██║██║  ██║███████╗
+ ╚═════╝   ╚═╝   ╚═╝     ╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚══════╝
 ```
 
 </div>
 
-Veridion is a next-generation, blockchain-powered certificate verification platform. It enables institutions to issue tamper-proof digital credentials that can be instantly verified by anyone, anywhere, without relying on a central authority.
+# Cyphire
 
-Built with React, FastAPI, and Polygon Blockchain Integration.
+> Blockchain-powered certificate verification. Immutable, instant, and tamper-proof.
+
+Built with **React + Vite**, **FastAPI**, and **Polygon Network** integration.
 
 ---
 
-## Why Veridion? Understanding the Significance
+## What is Cyphire?
 
-In a world where digital data is easily manipulated, Veridion solves the core problem of trust.
+Cyphire lets institutions issue digitally-signed credentials that anyone can verify in seconds — without contacting the issuer, without trusting a middleman, and without the possibility of forgery.
 
-### The Problem: The Verification Gap
-Traditional certificate verification is slow and insecure:
-*   **Forgeries**: Paper and digital PDFs are easily Altered.
-*   **Manual Overhead**: Employers must contact institutions directly to verify credentials.
-*   **Central Hazards**: If an institution's database is lost or corrupted, so are your achievements.
+### The Problem
+- PDFs and paper certificates are trivially forged.
+- Employers must phone or email institutions to confirm credentials — slow and unreliable.
+- A single database breach or institutional closure can erase records permanently.
 
-### The Solution: The Veridion Way
-Veridion bridges this gap using "Digital Fingerprints" and "Distributed Ledgers."
+### The Solution
+
+Every credential issued through Cyphire is:
+
+1. **Hashed** — A SHA-256 fingerprint of the recipient name, course, and issuing organisation is computed. Even a single character change produces a completely different hash.
+2. **Anchored on-chain** — The hash is written to a smart contract on the Polygon network via a signed transaction. It is immutable from that point.
+3. **Instantly verifiable** — Anyone can paste the hash (or upload the original PDF) on the public verify page. Cyphire checks the hash against both the local database and the blockchain in one call.
 
 ```mermaid
 graph LR
-    subgraph Traditional_Way [The Old Way]
-        A[Employer] -- "1. Emails/Calls" --> B[University]
-        B -- "2. Manual Search" --> C[(Legacy Database)]
-        C -- "3. Confirmation" --> B
-        B -- "4. Slow Response" --> A
+    subgraph Issue
+        A[Issuer Dashboard] -->|POST /certificates/issue| B[FastAPI]
+        B -->|SHA-256 hash| C[Smart Contract]
+        B -->|Store PDF| D[MinIO / Local Storage]
+        B -->|Store metadata| E[(SQLite / PostgreSQL)]
     end
 
-    subgraph Veridion_Way [The New Way]
-        D[Employer] -- "1. Scan/Click Link" --> E[Veridion Portal]
-        E -- "2. Check Fingerprint" --> F[Public Blockchain]
-        F -- "3. Instant Proof" --> E
-        E -- "4. Hired in Seconds" --> D
+    subgraph Verify
+        F[Public Verify Page] -->|GET /certificates/verify/:hash| B
+        F -->|POST /certificates/verify-file| B
+        B -->|verifyCertificate call| C
     end
 ```
 
-### Core Concepts for Beginners
-
-#### 1. Digital Fingerprints (Hashing)
-Every certificate issued through Veridion is passed through a mathematical function that creates a unique "Fingerprint" (a long string of characters). If even a single pixel in the certificate is changed, the fingerprint changes entirely. Veridion stores this fingerprint, not your personal data, ensuring privacy and security.
-
-#### 2. The Permanent Ledger (Blockchain)
-Veridion stores these fingerprints on the Polygon Network—a decentralized ledger shared across thousands of computers globally. Once a record is "anchored" here, it cannot be deleted, edited, or suppressed. It becomes a permanent part of history.
-
-#### 3. Trustless Verification
-You no longer need to "trust" the person showing you a diploma. You simply verify the fingerprint against the blockchain. The math provides the truth, making the process faster, cheaper, and more reliable than any human-gatekeeper system.
-
 ---
 
-## Key Features
+## Features
 
-*   **Immutable Trust**: Fingerprints are anchored on the blockchain (Polygon/Ethereum).
-*   **Instant Verification**: Verify credentials in milliseconds via unique hash or URL.
-*   **Issuer Dashboard**: A professional command center for institutions to manage records.
-*   **Custom Domain Support**: Institutions can host the verification portal on their own domain.
-*   **Dynamic Analytics**: Track issuance trends and network stats in real-time.
-*   **Matrix-Theme Interface**: A premium, high-tech aesthetic designed for the modern web.
-
----
-
-## Architecture
-
-Veridion uses a layered architecture to ensure security and scalability.
-
-```mermaid
-graph TD
-    subgraph Frontend [React Frontend]
-        UI[User Interface] -->|e.g. Dashboard| API_Client[Axios Client]
-        Verify_Page[Verify Page] -->|Reads URL Hash| API_Client
-    end
-
-    subgraph Backend [FastAPI Backend]
-        API_Client -->|REST API| Router[API Router]
-        Router -->|Auth/Logic| Controller[Business Logic]
-        Controller -->|Store Metadata| DB[(PostgreSQL/SQLite)]
-        Controller -->|Store File| MinIO[MinIO Storage]
-        Controller -->|Anchor Hash| Blockchain_Service[Blockchain Service]
-    end
-
-    subgraph Blockchain [Polygon Network]
-        Blockchain_Service -->|Transaction| Smart_Contract[Veridion Contract]
-        Smart_Contract -->|Logs Event| Public_Ledger[Immutable Ledger]
-    end
-
-    Verifier[Public Verifier] -->|1. Check Hash| Verify_Page
-    Verify_Page -->|2. Fetch Proof| Backend
-    Backend -->|3. Verify Chain| Blockchain
-```
+| Feature | Detail |
+|---|---|
+| **Hash-based verification** | Verify any credential by its unique SHA-256 hash |
+| **PDF upload verification** | Upload the original PDF — hash is extracted and checked automatically |
+| **Blockchain anchoring** | Every issuance writes a transaction to the Polygon smart contract |
+| **On-chain revocation** | Issuers can revoke credentials; revocation is recorded on-chain |
+| **Certificate PDF generation** | Auto-generates a styled PDF for each credential on issue |
+| **MinIO storage** | Generated PDFs uploaded to MinIO (falls back gracefully if unavailable) |
+| **Issuer dashboard** | Protected dashboard with credential audit log, analytics, and issuance form |
+| **JWT authentication** | HS256-signed access tokens, configurable expiry |
+| **Organisation management** | Multi-org support — each issuer is linked to an organisation |
 
 ---
 
 ## Tech Stack
 
-*   **Frontend**: React 18, Vite, Tailwind CSS, Framer Motion, Recharts.
-*   **Backend**: Python, FastAPI, SQLAlchemy, Pydantic.
-*   **Database**: SQLite (Dev) / PostgreSQL (Prod).
-*   **Blockchain**: Polygon / Ethereum (Web3.py).
-*   **Storage**: MinIO / Local FS / IPFS.
+| Layer | Technology |
+|---|---|
+| Frontend | React 18, Vite, Tailwind CSS v4, Framer Motion, Recharts, lucide-react |
+| Backend | Python 3.9+, FastAPI, SQLAlchemy, Pydantic v2, pydantic-settings |
+| Auth | JWT (python-jose), bcrypt |
+| Blockchain | Web3.py, Polygon (configurable RPC) |
+| Storage | MinIO (optional) / Local filesystem fallback |
+| Database | SQLite (dev) / PostgreSQL (prod) |
+| PDF Generation | ReportLab |
+
+---
+
+## Project Structure
+
+```
+Cyphire/
+├── frontend/
+│   ├── src/
+│   │   ├── pages/
+│   │   │   ├── Verify.jsx        # Public verification page
+│   │   │   ├── Login.jsx         # Issuer authentication
+│   │   │   └── Dashboard.jsx     # Issuer management console
+│   │   ├── components/ui/        # Shared UI components
+│   │   ├── services/api.js       # Axios client
+│   │   └── App.jsx               # Routes: / → /verify, /login, /dashboard
+│   └── vite.config.js
+│
+├── backend/
+│   └── app/
+│       ├── main.py               # FastAPI app, CORS, static files, router registration
+│       ├── config/settings.py    # All env vars via pydantic-settings
+│       ├── db/database.py        # SQLAlchemy engine + session
+│       ├── models/               # SQLAlchemy ORM models
+│       ├── schemas/              # Pydantic request/response schemas
+│       ├── routes/
+│       │   ├── auth.py           # /auth/register, /auth/login
+│       │   ├── certificates.py   # /certificates/* (issue, verify, revoke, delete, list)
+│       │   └── organizations.py  # /organizations/* (create, get, update)
+│       ├── services/
+│       │   ├── auth_service.py   # JWT creation, user lookup, password hashing
+│       │   ├── blockchain_service.py  # Web3 issue/revoke/verify calls
+│       │   ├── certificate_service.py # PDF generation, SHA-256 hashing
+│       │   └── minio_service.py  # MinIO upload and URL generation
+│       └── templates/            # HTML template for certificate PDF
+│
+├── .env                          # Environment variables (see below)
+├── run.ps1                       # One-command launcher (Windows)
+└── README.md
+```
+
+---
+
+## API Reference
+
+### Auth — `/auth`
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| POST | `/auth/register` | None | Register a new issuer account |
+| POST | `/auth/login` | None | Returns a JWT access token |
+
+**Login request body:**
+```json
+{ "email": "admin@org.com", "password": "secret" }
+```
+**Login response:**
+```json
+{ "access_token": "<jwt>" }
+```
+
+---
+
+### Certificates — `/certificates`
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| POST | `/certificates/issue` | JWT | Issue a new credential, anchor on-chain, generate PDF |
+| GET | `/certificates/verify/{cert_hash}` | None | Verify by hash — checks DB + blockchain |
+| POST | `/certificates/verify-file` | None | Upload PDF — hash extracted and verified |
+| POST | `/certificates/{cert_id}/revoke` | JWT | Revoke a credential on-chain |
+| DELETE | `/certificates/{cert_id}` | JWT | Delete a credential from the database |
+| GET | `/certificates/` | JWT | List all credentials for the issuer's organisation |
+
+**Issue request body:**
+```json
+{ "owner_name": "Alice Johnson", "course_name": "Blockchain Fundamentals" }
+```
+
+**Verify response:**
+```json
+{
+  "local_record": { "id": 1, "cert_hash": "...", "owner_name": "...", "course_name": "...", "tx_hash": "0x...", "revoked": false },
+  "on_chain": { "exists": true, "issuer": "0x...", "timestamp": 1700000000, "revoked": false },
+  "pdf_url": "https://..."
+}
+```
+
+---
+
+### Organisations — `/organizations`
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| POST | `/organizations/` | None | Create a new organisation |
+| GET | `/organizations/me` | JWT | Get the current user's organisation |
+| GET | `/organizations/{org_id}` | None | Get an organisation by ID |
+| PUT | `/organizations/{org_id}` | JWT | Update organisation details |
+
+---
+
+## Blockchain Integration
+
+Cyphire uses a custom Solidity smart contract deployed on Polygon (or any EVM chain). The contract exposes three functions:
+
+```solidity
+function issueCertificate(string _certHash) external
+function revokeCertificate(string _certHash) external
+function verifyCertificate(string _certHash) external view
+    returns (bool exists, address issuer, uint256 timestamp, bool revoked)
+```
+
+If `RPC_URL` or `PRIVATE_KEY` are not set, the blockchain service runs in **mock mode** — issuance and revocation still work and return placeholder transaction hashes. This is useful for local development without a funded wallet.
+
+---
+
+## Environment Variables
+
+Create a `.env` file in the `backend/` directory:
+
+```env
+# Database
+DATABASE_URL=sqlite:///./cyphire.db
+# For production PostgreSQL:
+# DATABASE_URL=postgresql://user:password@localhost:5432/cyphire
+
+# Auth
+SECRET_KEY=your-secret-key-min-32-chars
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=60
+
+# Blockchain (leave blank to run in mock mode)
+RPC_URL=https://polygon-rpc.com
+PRIVATE_KEY=your-wallet-private-key-hex
+CONTRACT_ADDRESS=0xYourDeployedContractAddress
+
+# Frontend (used for CORS)
+FRONTEND_URL=http://localhost:3000
+
+# MinIO (leave as defaults for local play.min.io, or configure your own)
+MINIO_ENDPOINT=play.min.io:9000
+MINIO_ACCESS_KEY=minioadmin
+MINIO_SECRET_KEY=minioadmin
+MINIO_BUCKET_NAME=certificates
+MINIO_SECURE=true
+```
 
 ---
 
 ## Getting Started
 
 ### Prerequisites
-*   Node.js & npm
-*   Python 3.9+
-*   Git
+- Node.js 18+ and npm
+- Python 3.9+
+- Git
 
-### Installation
+### 1. Clone
 
-1.  **Clone the Repository**
-    ```bash
-    git clone https://github.com/yourusername/veridion.git
-    cd veridion
-    ```
+```bash
+git clone https://github.com/yourusername/cyphire.git
+cd cyphire
+```
 
-2.  **Frontend Setup**
-    ```bash
-    cd frontend
-    npm install
-    npm run dev
-    ```
+### 2. Backend
 
-3.  **Backend Setup**
-    ```bash
-    cd backend
-    python -m venv venv
-    source venv/bin/activate  # On Windows: venv\Scripts\activate
-    pip install -r requirements.txt
-    uvicorn app.main:app --reload
-    ```
+```bash
+cd backend
+python -m venv venv
 
-4.  **Access the App**
-    *   Frontend: http://localhost:5173
-    *   Backend Docs: http://localhost:8000/docs
+# Windows
+venv\Scripts\activate
+# macOS / Linux
+source venv/bin/activate
+
+pip install -r requirements.txt
+
+# Copy and fill in your .env
+cp .env.example .env
+
+uvicorn app.main:app --reload --port 8000
+```
+
+### 3. Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### 4. One-command (Windows)
+
+A `run.ps1` script at the repo root starts both servers simultaneously:
+
+```powershell
+.\run.ps1
+```
+
+### 5. Access
+
+| Service | URL |
+|---|---|
+| Verify page | http://localhost:3000/verify |
+| Issuer login | http://localhost:3000/login |
+| API docs (Swagger) | http://localhost:8000/docs |
+| API docs (Redoc) | http://localhost:8000/redoc |
+
+---
+
+## First-Time Setup
+
+1. Register an organisation via `POST /organizations/` with a name, wallet address, and optional domain.
+2. Register an issuer account via `POST /auth/register` and link them to the organisation ID.
+3. Log in at `/login` — your JWT is stored in `localStorage`.
+4. Issue credentials from the Dashboard. Each issuance generates a PDF, uploads it to MinIO, and writes the hash to the blockchain.
+5. Share the credential hash with the recipient. They verify it at `/verify`.
 
 ---
 
 ## License
 
-MIT License. Built for a more trusted world.
+MIT — Built for a more trusted world.

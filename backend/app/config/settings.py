@@ -10,6 +10,13 @@ class Settings(BaseSettings):
     PRIVATE_KEY: str = ""
     CONTRACT_ADDRESS: str = ""
 
+    # MinIO Configuration
+    MINIO_ENDPOINT: str = "play.min.io:9000"
+    MINIO_ACCESS_KEY: str = "minioadmin"
+    MINIO_SECRET_KEY: str = "minioadmin"
+    MINIO_BUCKET_NAME: str = "certificates"
+    MINIO_SECURE: bool = True
+
     class Config:
         env_file = ".env"
 

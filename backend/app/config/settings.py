@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     RPC_URL: str = ""
     PRIVATE_KEY: str = ""
     CONTRACT_ADDRESS: str = ""
+    FRONTEND_URL: str = "http://localhost:3000"
 
     # MinIO Configuration
     MINIO_ENDPOINT: str = "play.min.io:9000"

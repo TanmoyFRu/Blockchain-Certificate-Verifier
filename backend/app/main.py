@@ -5,9 +5,16 @@ import app.models.user
 import app.models.organization
 import app.models.certificate
 
-Base.metadata.create_all(bind=engine)
+app = FastAPI(title="Cyphire API", version="1.0.0")
 
-app = FastAPI(title="Veridion API", version="1.0.0")
+@app.on_event("startup")
+def startup_event():
+    print("Starting Cyphire API...")
+    try:
+        Base.metadata.create_all(bind=engine)
+        print("Database initialized.")
+    except Exception as e:
+        print(f"Database Initialization Error: {e}")
 
 from fastapi.middleware.cors import CORSMiddleware
 

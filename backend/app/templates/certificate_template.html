@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        @page {
+            size: A4 landscape;
+            margin: 0;
+        }
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        .container {
+            width: 100%;
+            height: 100%;
+            padding: 40px;
+            box-sizing: border-box;
+            position: relative;
+        }
+        .border-outer {
+            border: 15px solid #1a1a1a;
+            height: 100%;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px;
+        }
+        .border-inner {
+            border: 2px solid #1a1a1a;
+            height: 100%;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 40px;
+            text-align: center;
+            background-color: white;
+        }
+        .header {
+            margin-top: 20px;
+        }
+        .title {
+            font-size: 50px;
+            font-weight: bold;
+            color: #1a1a1a;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+        .subtitle {
+            font-size: 20px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .recipient {
+            font-size: 40px;
+            font-weight: bold;
+            color: #000;
+            margin: 30px 0;
+            border-bottom: 2px solid #eee;
+            display: inline-block;
+            padding: 0 40px;
+        }
+        .course-text {
+            font-size: 22px;
+            color: #444;
+            margin-bottom: 10px;
+        }
+        .course-name {
+            font-size: 30px;
+            font-weight: bold;
+            color: #1a1a1a;
+            margin-bottom: 40px;
+        }
+        .footer {
+            margin-top: 60px;
+            display: table;
+            width: 100%;
+        }
+        .footer-item {
+            display: table-cell;
+            width: 33%;
+            vertical-align: bottom;
+        }
+        .signature-line {
+            border-top: 1px solid #1a1a1a;
+            width: 200px;
+            margin: 0 auto 10px auto;
+        }
+        .issuer-info {
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .date-info {
+            font-size: 14px;
+            color: #666;
+        }
+        .qr-section {
+            position: absolute;
+            bottom: 80px;
+            right: 80px;
+            text-align: center;
+        }
+        .qr-code {
+            width: 120px;
+            height: 120px;
+        }
+        .verify-text {
+            font-size: 10px;
+            color: #999;
+            margin-top: 5px;
+            text-transform: uppercase;
+        }
+        .hash-display {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-family: monospace;
+            font-size: 10px;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="border-outer">
+            <div class="border-inner">
+                <div class="header">
+                    <div class="title">Certificate of Completion</div>
+                    <div class="subtitle">This prestigious award is presented to</div>
+                </div>
+                
+                <div class="recipient">{{ owner_name }}</div>
+                
+                <div class="course-text">for successfully demonstrating mastery and completion of</div>
+                <div class="course-name">{{ course_name }}</div>
+                
+                <div class="footer">
+                    <div class="footer-item">
+                        <div class="signature-line"></div>
+                        <div class="issuer-info">{{ org_name }}</div>
+                        <div class="date-info">Issued on {{ date }}</div>
+                    </div>
+                </div>
+
+                <div class="qr-section">
+                    <img src="{{ qr_path }}" class="qr-code">
+                    <div class="verify-text">Scan to Verify Authenticity</div>
+                </div>
+
+                <div class="hash-display">
+                    Record Hash: {{ cert_hash }}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

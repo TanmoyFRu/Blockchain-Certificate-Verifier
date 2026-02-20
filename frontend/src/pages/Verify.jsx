@@ -1,8 +1,14 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import api from '../services/api';
-import { ShieldCheck, Search, Activity, FileCheck, Database, Zap, Upload, ArrowRight, Check, Globe, FileText, Sparkles } from 'lucide-react';
+import { ShieldCheck, Database, Zap, Upload, ArrowRight, Check, Globe, FileText, Lock, Cpu, Network } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BasicDemo } from '../components/ui/image-comparison-demo';
+import { Button } from '../components/ui/button';
+import { GlowingEffect } from '../components/ui/glowing-effect';
+import { cn } from '../lib/utils';
+import Footer from '../components/ui/footer';
+import { MeshGradient } from '../components/ui/background-paper-shaders';
+import { ScrambledTitle } from '../components/ui/modern-animated-hero-section';
 
 const Verify = () => {
     const [hash, setHash] = useState('');
@@ -12,6 +18,16 @@ const Verify = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const fileInputRef = useRef(null);
+    const location = useLocation();
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const urlHash = params.get('hash');
+        if (urlHash) {
+            setHash(urlHash);
+            setVerifyMode('hash');
+        }
+    }, [location]);
 
     const handleVerify = async (e) => {
         e.preventDefault();
@@ -21,7 +37,7 @@ const Verify = () => {
         try {
             let res;
             if (verifyMode === 'hash') {
-                res = await api.get(`/certificates/verify/${hash}`);
+                res = await api.get(`/certificates/verify/${hash.trim()}`);
             } else {
                 if (!file) throw new Error("Please select a file first");
                 const formData = new FormData();
@@ -45,7 +61,12 @@ const Verify = () => {
     };
 
     return (
-        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'hsl(var(--background))' }}>
+        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden', backgroundColor: 'hsl(var(--background))' }}>
+            <MeshGradient
+                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 0 }}
+                colors={['#1a0533', '#0d1f4f']}
+                speed={0.6}
+            />
             <nav style={{
                 height: '64px',
                 borderBottom: '1px solid hsl(var(--border))',
@@ -61,14 +82,14 @@ const Verify = () => {
             }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600 }}>
                     <ShieldCheck size={20} style={{ color: 'hsl(var(--primary))' }} />
-                    <span>CertVerifier</span>
+                    <span>Veridion</span>
                 </div>
-                <button onClick={() => window.location.href = '/login'} className="shad-btn shad-btn-outline">
+                <Button onClick={() => window.location.href = '/login'} variant="outline" size="sm" className="ring-hover-effect">
                     Issuer Login
-                </button>
+                </Button>
             </nav>
 
-            <main style={{ flex: 1, paddingBottom: '8rem' }}>
+            <main style={{ flex: 1, paddingBottom: '8rem', position: 'relative', zIndex: 1 }}>
                 <section style={{ padding: '8rem 2rem 4rem', textAlign: 'center', maxWidth: '800px', margin: '0 auto' }}>
                     <div style={{
                         display: 'inline-flex',
@@ -76,29 +97,24 @@ const Verify = () => {
                         gap: '0.5rem',
                         padding: '0.35rem 1rem',
                         borderRadius: '9999px',
-                        backgroundColor: 'hsl(var(--secondary))',
+                        backgroundColor: 'rgba(255,255,255,0.08)',
                         fontSize: '12px',
-                        fontWeight: 500,
+                        fontWeight: 600,
                         marginBottom: '2rem',
-                        border: '1px solid hsl(var(--border))'
+                        border: '1px solid rgba(255,255,255,0.15)',
+                        color: '#ffffff'
                     }}>
                         <Globe size={14} />
                         <span>Decentralized Verification Protocol</span>
                     </div>
 
-                    <h1 style={{
-                        fontSize: 'clamp(2.5rem, 8vw, 4rem)',
-                        fontWeight: 800,
-                        letterSpacing: '-0.04em',
-                        marginBottom: '1.5rem',
-                        lineHeight: 1
-                    }}>
-                        Instant Certificate <br />
-                        <span style={{ color: 'hsl(var(--muted-foreground))' }}>Verification.</span>
-                    </h1>
+                    <ScrambledTitle
+                        className="text-4xl font-extrabold tracking-tight text-white mb-8 sm:text-5xl md:text-6xl text-center w-full"
+                        items={['Instant Certificate Verification', 'Secure Blockchain Registry', 'Immutable & Trusted']}
+                    />
 
                     <p style={{
-                        color: 'hsl(var(--muted-foreground))',
+                        color: 'rgba(255,255,255,0.65)',
                         fontSize: '1.125rem',
                         marginBottom: '4rem',
                         lineHeight: 1.6,
@@ -109,58 +125,40 @@ const Verify = () => {
                     </p>
 
                     <div className="shad-card" style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'left' }}>
-                        <div style={{
-                            display: 'flex',
-                            gap: '1rem',
-                            marginBottom: '2rem',
-                            backgroundColor: 'hsla(var(--muted), 0.3)',
-                            padding: '0.25rem',
-                            borderRadius: 'var(--radius)'
-                        }}>
+                        <div className="mb-8 grid w-full grid-cols-2 gap-2 rounded-xl border border-white/5 bg-muted/50 p-1.5">
                             <button
                                 onClick={() => { setVerifyMode('hash'); setData(null); setError(null); }}
-                                style={{
-                                    flex: 1,
-                                    padding: '0.65rem',
-                                    border: 'none',
-                                    borderRadius: 'calc(var(--radius) - 2px)',
-                                    background: verifyMode === 'hash' ? 'hsl(var(--primary))' : 'none',
-                                    color: verifyMode === 'hash' ? 'hsl(var(--primary-foreground))' : 'hsl(var(--muted-foreground))',
-                                    cursor: 'pointer',
-                                    fontSize: '13px',
-                                    fontWeight: 600,
-                                    transition: 'all 0.2s'
-                                }}
+                                className={cn(
+                                    "rounded-lg px-4 py-4 text-base font-bold transition-all",
+                                    verifyMode === 'hash'
+                                        ? "bg-background text-foreground shadow-sm ring-1 ring-white/10"
+                                        : "text-muted-foreground hover:bg-white/5"
+                                )}
                             >
                                 Hash ID
                             </button>
                             <button
                                 onClick={() => { setVerifyMode('file'); setData(null); setError(null); }}
-                                style={{
-                                    flex: 1,
-                                    padding: '0.65rem',
-                                    border: 'none',
-                                    borderRadius: 'calc(var(--radius) - 2px)',
-                                    background: verifyMode === 'file' ? 'hsl(var(--primary))' : 'none',
-                                    color: verifyMode === 'file' ? 'hsl(var(--primary-foreground))' : 'hsl(var(--muted-foreground))',
-                                    cursor: 'pointer',
-                                    fontSize: '13px',
-                                    fontWeight: 600,
-                                    transition: 'all 0.2s'
-                                }}
+                                className={cn(
+                                    "rounded-lg px-4 py-4 text-base font-bold transition-all",
+                                    verifyMode === 'file'
+                                        ? "bg-background text-foreground shadow-sm ring-1 ring-white/10"
+                                        : "text-muted-foreground hover:bg-white/5"
+                                )}
                             >
                                 PDF Upload
                             </button>
                         </div>
 
-                        <form onSubmit={handleVerify} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                        <form onSubmit={handleVerify} className="flex flex-col gap-6">
                             {verifyMode === 'hash' ? (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                    <label style={{ fontSize: '12px', fontWeight: 700, color: 'hsl(var(--muted-foreground))' }}>CREDENTIAL HASH</label>
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold tracking-wide text-muted-foreground">CREDENTIAL HASH</label>
                                     <input
                                         type="text"
                                         placeholder="Enter 64-character hash..."
                                         className="shad-input"
+                                        style={{ height: '56px', backgroundColor: 'hsl(var(--muted) / 0.5)', borderColor: 'hsl(var(--border))', fontSize: '15px' }}
                                         value={hash}
                                         onChange={(e) => setHash(e.target.value)}
                                         required
@@ -179,28 +177,30 @@ const Verify = () => {
                                         ref={fileInputRef}
                                     />
                                     {file ? (
-                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-                                            <FileText size={40} style={{ color: 'hsl(var(--primary))' }} />
-                                            <p style={{ fontSize: '14px', fontWeight: 700 }}>{file.name}</p>
-                                            <p style={{ fontSize: '12px', color: 'hsl(var(--muted-foreground))' }}>Ready to verify</p>
+                                        <div className="flex flex-col items-center gap-2">
+                                            <FileText size={40} className="text-foreground" />
+                                            <p className="text-sm font-bold">{file.name}</p>
+                                            <p className="text-xs text-muted-foreground">Ready to verify</p>
                                         </div>
                                     ) : (
-                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
-                                            <Upload size={40} style={{ color: 'hsl(var(--muted-foreground))' }} />
-                                            <p style={{ fontSize: '15px', fontWeight: 700 }}>Click to upload certificate</p>
-                                            <p style={{ fontSize: '12px', color: 'hsl(var(--muted-foreground))' }}>Support for standard PDF format</p>
+                                        <div className="flex flex-col items-center gap-3">
+                                            <Upload size={40} className="text-muted-foreground" />
+                                            <p className="text-[15px] font-bold">Click to upload certificate</p>
+                                            <p className="text-xs text-muted-foreground">Support for standard PDF format</p>
                                         </div>
                                     )}
                                 </div>
                             )}
-                            <button
+                            <Button
                                 type="submit"
-                                className="shad-btn shad-btn-primary"
+                                variant="shine"
                                 disabled={loading}
-                                style={{ height: '48px', width: '100%' }}
+                                className="h-14 w-full rounded-xl text-base font-bold"
                             >
-                                {loading ? 'Verifying...' : 'Authenticate Credential'}
-                            </button>
+                                {loading ? 'Verifying...' : (
+                                    <>Verify Credential <ArrowRight size={20} /></>
+                                )}
+                            </Button>
                         </form>
 
                         <AnimatePresence>
@@ -229,76 +229,78 @@ const Verify = () => {
                                 animate={{ opacity: 1, y: 0 }}
                                 style={{ marginTop: '2.5rem', paddingTop: '2rem', borderTop: '1px solid hsl(var(--border))' }}
                             >
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
-                                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'hsla(142, 70%, 50%, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid hsla(142, 70%, 50%, 0.2)' }}>
-                                        <Check color="#22c55e" size={24} />
+                                <div className="mb-8 flex items-center gap-4">
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-full border border-green-500/20 bg-green-500/10">
+                                        <Check className="text-green-500" size={24} />
                                     </div>
-                                    <div>
-                                        <h3 style={{ fontSize: '18px', fontWeight: 800 }}>Record Verified</h3>
-                                        <p style={{ fontSize: '12px', color: 'hsl(var(--muted-foreground))' }}>Cryptographically signed on Polygon</p>
+                                    <div className="space-y-1">
+                                        <h3 className="text-lg font-extrabold text-foreground">Record Verified</h3>
+                                        <p className="text-xs font-medium text-muted-foreground">Cryptographically signed on Polygon</p>
                                     </div>
                                 </div>
 
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                                    <div style={{ padding: '1.25rem', borderRadius: 'var(--radius)', backgroundColor: 'hsla(var(--secondary), 0.4)', border: '1px solid hsl(var(--border))' }}>
-                                        <span style={{ fontSize: '10px', color: 'hsl(var(--muted-foreground))', textTransform: 'uppercase', fontWeight: 800 }}>Recipient</span>
-                                        <p style={{ fontSize: '15px', fontWeight: 700, marginTop: '0.25rem' }}>{data.local_record?.owner_name}</p>
+                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                    <div className="rounded-xl border border-border bg-muted/40 p-5 transition-colors hover:bg-muted/60">
+                                        <span className="text-xs font-extrabold uppercase tracking-wider text-muted-foreground">Recipient</span>
+                                        <p className="mt-1 text-base font-bold text-foreground">{data.local_record?.owner_name}</p>
                                     </div>
-                                    <div style={{ padding: '1.25rem', borderRadius: 'var(--radius)', backgroundColor: 'hsla(var(--secondary), 0.4)', border: '1px solid hsl(var(--border))' }}>
-                                        <span style={{ fontSize: '10px', color: 'hsl(var(--muted-foreground))', textTransform: 'uppercase', fontWeight: 800 }}>Credential</span>
-                                        <p style={{ fontSize: '15px', fontWeight: 700, marginTop: '0.25rem' }}>{data.local_record?.course_name}</p>
+                                    <div className="rounded-xl border border-border bg-muted/40 p-5 transition-colors hover:bg-muted/60">
+                                        <span className="text-xs font-extrabold uppercase tracking-wider text-muted-foreground">Credential</span>
+                                        <p className="mt-1 text-base font-bold text-foreground">{data.local_record?.course_name}</p>
                                     </div>
                                 </div>
+                                {data.pdf_url && (
+                                    <div className="mt-6 text-center">
+                                        <a href={data.pdf_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-primary underline underline-offset-4 ring-offset-background transition-colors hover:text-primary/80">
+                                            <FileText size={16} /> View Original Certificate
+                                        </a>
+                                    </div>
+                                )}
                             </motion.div>
                         )}
                     </div>
                 </section>
 
-                {/* Improved Visual Comparison Section */}
-                <section style={{ padding: '4rem 2rem', maxWidth: '800px', margin: '0 auto' }}>
-                    <div style={{ textAlign: 'left', marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: 'hsla(var(--primary), 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <Sparkles size={20} color="white" />
-                        </div>
-                        <div>
-                            <h3 style={{ fontSize: '20px', fontWeight: 800 }}>Integrity Lens</h3>
-                            <p style={{ fontSize: '14px', color: 'hsl(var(--muted-foreground))' }}>Visual comparison of on-chain versus original data</p>
-                        </div>
-                    </div>
-                    <BasicDemo />
-                </section>
 
                 <section style={{ padding: '4rem 2rem', maxWidth: '1100px', margin: '0 auto' }}>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
                         {[
                             { icon: <Database />, title: 'Immutable Audit', desc: 'Tamper-proof record keeping powered by Polygon blockchain.' },
                             { icon: <Zap />, title: 'Instant Proof', desc: 'Near-zero latency verification using distributed node indexing.' },
-                            { icon: <ShieldCheck />, title: 'Enterprise Secure', desc: 'Cryptographically signed certificates with SHA-256 standard.' }
+                            { icon: <ShieldCheck />, title: 'Enterprise Secure', desc: 'Cryptographically signed certificates with SHA-256 standard.' },
+                            { icon: <Lock />, title: 'Privacy Preserved', desc: 'Zero-knowledge proofs ensure data privacy while maintaining verifiable authenticity.' },
+                            { icon: <Cpu />, title: 'Smart Contracts', desc: 'Automated logic execution ensures compliance and removes manual verification bottlenecks.' },
+                            { icon: <Network />, title: 'Global Consensus', desc: 'Distributed ledger technology ensures your data is available and verifiable 24/7 globally.' }
                         ].map((feature, i) => (
-                            <div key={i} className="shad-card" style={{ padding: '2.5rem' }}>
-                                <div style={{ width: '48px', height: '48px', borderRadius: '12px', backgroundColor: 'hsla(var(--primary), 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem', color: 'hsl(var(--primary))' }}>
-                                    {feature.icon}
+                            <div key={i} className="min-h-[14rem] relative h-full rounded-2xl p-[1px]">
+                                <GlowingEffect
+                                    spread={40}
+                                    glow={true}
+                                    disabled={false}
+                                    proximity={64}
+                                    inactiveZone={0.01}
+                                    borderWidth={3}
+                                />
+                                <div className="relative flex h-full flex-col gap-4 overflow-hidden rounded-xl bg-background p-6 shadow-sm dark:shadow-[0px_0px_27px_0px_rgba(45,45,45,0.3)] md:p-6">
+                                    <div className="w-fit rounded-lg border-[0.75px] border-border bg-muted p-2">
+                                        {feature.icon}
+                                    </div>
+                                    <div className="space-y-2">
+                                        <h3 className="text-lg font-bold text-foreground">
+                                            {feature.title}
+                                        </h3>
+                                        <p className="text-sm text-muted-foreground">
+                                            {feature.desc}
+                                        </p>
+                                    </div>
                                 </div>
-                                <h4 style={{ fontWeight: 800, fontSize: '18px', marginBottom: '0.75rem' }}>{feature.title}</h4>
-                                <p style={{ color: 'hsl(var(--muted-foreground))', fontSize: '14.5px', lineHeight: 1.6 }}>{feature.desc}</p>
                             </div>
                         ))}
                     </div>
                 </section>
             </main>
 
-            <footer style={{ padding: '4rem 2rem', borderTop: '1px solid hsl(var(--border))', backgroundColor: 'hsla(var(--background), 0.5)' }}>
-                <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ fontSize: '14px', color: 'hsl(var(--muted-foreground))', fontWeight: 600 }}>
-                        © 2026 CertVerifier Protocol.
-                    </div>
-                    <div style={{ display: 'flex', gap: '2rem', fontSize: '14px', color: 'hsl(var(--muted-foreground))', fontWeight: 500 }}>
-                        <span>Terms</span>
-                        <span>Privacy</span>
-                        <span>Infrastructure</span>
-                    </div>
-                </div>
-            </footer>
+            <Footer />
         </div>
     );
 };

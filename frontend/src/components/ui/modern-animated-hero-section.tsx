@@ -68,7 +68,7 @@ class TextScramble {
                     char = this.chars[Math.floor(Math.random() * this.chars.length)]
                     this.queue[i].char = char
                 }
-                output += `<span class="dud text-primary opacity-70">${char}</span>`
+                output += `<span class="dud text-green-500 opacity-70">${char}</span>`
             } else {
                 output += from
             }
@@ -206,8 +206,8 @@ const RainingLetters: React.FC = () => {
                 <span
                     key={index}
                     className={`absolute text-xs transition-colors duration-100 ${activeIndices.has(index)
-                            ? "text-[#00ff00] text-base scale-125 z-10 font-bold animate-pulse"
-                            : "text-slate-600 font-light"
+                        ? "text-[#00ff00] text-base scale-125 z-10 font-bold animate-pulse"
+                        : "text-slate-600 font-light"
                         }`}
                     style={{
                         left: `${char.x}%`,

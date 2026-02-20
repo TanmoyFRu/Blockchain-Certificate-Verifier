@@ -1,5 +1,4 @@
 'use client';
-import { cn } from '../../lib/utils';
 import { useState, createContext, useContext } from 'react';
 import {
     motion,
@@ -24,6 +23,7 @@ type ImageComparisonProps = {
     className?: string;
     enableHover?: boolean;
     springOptions?: SpringOptions;
+    onChange?: (position: number) => void;
 };
 
 const DEFAULT_SPRING_OPTIONS = {
@@ -36,6 +36,7 @@ function ImageComparison({
     className,
     enableHover,
     springOptions,
+    onChange,
 }: ImageComparisonProps) {
     const [isDragging, setIsDragging] = useState(false);
     const motionValue = useMotionValue(50);
@@ -62,6 +63,7 @@ function ImageComparison({
         );
         motionValue.set(percentage);
         setSliderPosition(percentage);
+        if (onChange) onChange(percentage);
     };
 
     return (
@@ -69,11 +71,8 @@ function ImageComparison({
             value={{ sliderPosition, setSliderPosition, motionSliderPosition }}
         >
             <div
-                className={cn(
-                    'relative select-none overflow-hidden',
-                    enableHover && 'cursor-ew-resize',
-                    className
-                )}
+                style={{ position: 'relative', userSelect: 'none', overflow: 'hidden', width: '100%', height: '100%', cursor: enableHover ? 'ew-resize' : 'default' }}
+                className={className}
                 onMouseMove={handleDrag}
                 onMouseDown={() => !enableHover && setIsDragging(true)}
                 onMouseUp={() => !enableHover && setIsDragging(false)}
@@ -92,31 +91,40 @@ const ImageComparisonImage = ({
     className,
     alt,
     src,
-    position,
+    side,
 }: {
     className?: string;
     alt: string;
     src: string;
-    position: 'left' | 'right';
+    side: 'left' | 'right';
 }) => {
     const { motionSliderPosition } = useContext(ImageComparisonContext)!;
+
+    // side="left" -> shows on the left of the slider (clips the right side)
+    // side="right" -> shows on the right of the slider (clips the left side)
     const leftClipPath = useTransform(
         motionSliderPosition,
-        (value) => `inset(0 0 0 ${value}%)`
+        (value) => `inset(0 ${100 - value}% 0 0)`
     );
     const rightClipPath = useTransform(
         motionSliderPosition,
-        (value) => `inset(0 ${100 - value}% 0 0)`
+        (value) => `inset(0 0 0 ${value}%)`
     );
 
     return (
         <motion.img
             src={src}
             alt={alt}
-            className={cn('absolute inset-0 h-full w-full object-cover', className)}
             style={{
-                clipPath: position === 'left' ? leftClipPath : rightClipPath,
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                clipPath: side === 'left' ? leftClipPath : rightClipPath,
             }}
+            className={className}
         />
     );
 };
@@ -125,19 +133,27 @@ const ImageComparisonSlider = ({
     className,
     children,
 }: {
-    className: string;
+    className?: string;
     children?: React.ReactNode;
 }) => {
     const { motionSliderPosition } = useContext(ImageComparisonContext)!;
 
-    const left = useTransform(motionSliderPosition, (value) => `${value}%`);
+    const leftPosition = useTransform(motionSliderPosition, (value) => `${value}%`);
 
     return (
         <motion.div
-            className={cn('absolute bottom-0 top-0 w-1 cursor-ew-resize', className)}
             style={{
-                left,
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                width: '2px',
+                backgroundColor: 'white',
+                cursor: 'ew-resize',
+                left: leftPosition,
+                transform: 'translateX(-50%)',
+                zIndex: 10
             }}
+            className={className}
         >
             {children}
         </motion.div>

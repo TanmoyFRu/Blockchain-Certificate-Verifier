@@ -100,16 +100,42 @@ const Login = () => {
                             </div>
                         )}
 
-                        <Button
+                        <button
                             type="submit"
-                            variant="shine"
                             disabled={loading}
-                            style={{ width: '100%', height: '48px', gap: '0.75rem', marginTop: '0.5rem', borderRadius: '12px', fontWeight: 700 }}
+                            onMouseEnter={e => {
+                                e.currentTarget.style.transform = 'translate(4px, 4px)';
+                                e.currentTarget.style.boxShadow = 'none';
+                            }}
+                            onMouseLeave={e => {
+                                e.currentTarget.style.transform = 'translate(0, 0)';
+                                e.currentTarget.style.boxShadow = '4px 4px 0px 0px #000';
+                            }}
+                            style={{
+                                width: '100%',
+                                height: '48px',
+                                marginTop: '0.5rem',
+                                borderRadius: '6px',
+                                fontWeight: 700,
+                                fontSize: '14px',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '0.5rem',
+                                cursor: loading ? 'not-allowed' : 'pointer',
+                                opacity: loading ? 0.6 : 1,
+                                backgroundColor: '#ffffff',
+                                color: '#000000',
+                                border: '2px solid #000000',
+                                boxShadow: '4px 4px 0px 0px #000',
+                                transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+                                pointerEvents: loading ? 'none' : 'auto',
+                            }}
                         >
                             {loading ? 'Authenticating...' : (
                                 <>Enter Portal <ArrowRight size={18} /></>
                             )}
-                        </Button>
+                        </button>
                     </form>
 
                     <p style={{ marginTop: '3rem', textAlign: 'center', fontSize: '14px', color: 'hsl(var(--muted-foreground))', fontWeight: 500 }}>
@@ -190,7 +216,7 @@ const Login = () => {
                         border: '1px solid hsl(var(--foreground) / 0.05)'
                     }}>
                         <p style={{ fontSize: '14px', fontStyle: 'italic', color: 'hsl(var(--muted-foreground))', lineHeight: 1.6 }}>
-                            "CertVerifier has revolutionized how we issue professional development credits, providing our members with instant, verifiable proof of their achievements."
+                            "Cyphire has revolutionized how we issue professional development credits, providing our members with instant, verifiable proof of their achievements."
                         </p>
                         <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                             <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'hsl(var(--foreground) / 0.1)' }}></div>

@@ -1,59 +1,96 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+
+@import "tailwindcss";
+
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:is(.dark *));
+
 :root {
-  --background: 224 71% 4%;
-  --foreground: 213 31% 91%;
-  --card: 224 71% 4%;
-  --card-foreground: 213 31% 91%;
-  --popover: 224 71% 4%;
-  --popover-foreground: 213 31% 91%;
-  --primary: 210 40% 98%;
-  --primary-foreground: 222.2 47.4% 1.2%;
-  --secondary: 222.2 47.4% 11.2%;
-  --secondary-foreground: 210 40% 98%;
-  --muted: 223 47% 11%;
-  --muted-foreground: 215.4 16.3% 56.9%;
-  --accent: 216 34% 17%;
-  --accent-foreground: 210 40% 98%;
-  --destructive: 0 63% 31%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 216 34% 17%;
-  --input: 216 34% 17%;
-  --ring: 216 34% 17%;
+  --background: oklch(0 0 0);
+  --foreground: oklch(1 0 0);
+  --card: oklch(0.1 0 0 / 0.1);
+  --card-foreground: oklch(1 0 0);
+  --popover: oklch(0 0 0 / 0.8);
+  --popover-foreground: oklch(1 0 0);
+  --primary: oklch(1 0 0);
+  --primary-foreground: oklch(0 0 0);
+  --secondary: oklch(0.65 0.25 25);
+  --secondary-foreground: oklch(1 0 0);
+  --muted: oklch(1 0 0 / 0.5);
+  --muted-foreground: oklch(0.7 0 0);
+  --accent: oklch(0.65 0.25 25);
+  --accent-foreground: oklch(1 0 0);
+  --destructive: oklch(0.6 0.25 15);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(1 0 0 / 0.2);
+  --input: oklch(1 0 0 / 0.1);
+  --ring: oklch(1 0 0 / 0.3);
   --radius: 0.5rem;
+  --font-geist-sans: "Plus Jakarta Sans", sans-serif;
+  --font-geist-mono: monospace;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius: var(--radius);
+  --animate-meteor: meteor 5s linear infinite;
+  --animate-shine: shine 3s ease-out infinite;
 }
 
-body {
-  font-family: 'Inter', -apple-system, sans-serif;
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
-  -webkit-font-smoothing: antialiased;
-  min-height: 100vh;
-  position: relative;
-  overflow-x: hidden;
+@keyframes meteor {
+  0% {
+    transform: rotate(215deg) translateX(0);
+    opacity: 1;
+  }
+
+  70% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: rotate(215deg) translateX(-500px);
+    opacity: 0;
+  }
 }
 
-/* Premium Mesh Background */
-body::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background:
-    radial-gradient(circle at 20% 20%, hsla(var(--primary), 0.05) 0%, transparent 40%),
-    radial-gradient(circle at 80% 80%, hsla(var(--primary), 0.05) 0%, transparent 40%);
-  z-index: -1;
-  pointer-events: none;
+@keyframes shine {
+  0% {
+    background-position: 200% 0;
+  }
+
+  25% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
 }
 
-.shad-card {
-  background-color: hsla(var(--card), 0.5);
+@utility shad-card {
+  background-color: hsl(var(--card) / 0.5);
   backdrop-filter: blur(12px);
   border: 1px solid hsl(var(--border));
   border-radius: var(--radius);
@@ -61,24 +98,24 @@ body::before {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-.shad-input {
+@utility shad-input {
   width: 100%;
-  background-color: hsla(var(--muted), 0.5);
+  background-color: hsl(var(--muted) / 0.5);
   border: 1px solid hsl(var(--border));
   border-radius: var(--radius);
   padding: 0.75rem 1rem;
   color: hsl(var(--foreground));
   font-size: 14px;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:focus {
+    outline: none;
+    border-color: hsl(var(--foreground));
+    box-shadow: 0 0 0 1px hsl(var(--foreground) / 0.1);
+  }
 }
 
-.shad-input:focus {
-  outline: none;
-  border-color: hsl(var(--foreground));
-  box-shadow: 0 0 0 1px hsla(var(--foreground), 0.1);
-}
-
-.shad-btn {
+@utility shad-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -91,39 +128,73 @@ body::before {
   gap: 0.5rem;
 }
 
-.shad-btn-primary {
+@utility shad-btn-primary {
+  @apply shad-btn;
   background-color: hsl(var(--primary));
   color: hsl(var(--primary-foreground));
   border: none;
+
+  &:hover {
+    background-color: hsl(var(--primary) / 0.9);
+    transform: translateY(-1px);
+  }
 }
 
-.shad-btn-primary:hover {
-  background-color: hsla(var(--primary), 0.9);
-  transform: translateY(-1px);
-}
-
-.shad-btn-outline {
+@utility shad-btn-outline {
+  @apply shad-btn;
   background-color: transparent;
   border: 1px solid hsl(var(--border));
   color: hsl(var(--foreground));
+
+  &:hover {
+    background-color: hsl(var(--secondary));
+    border-color: hsl(var(--muted-foreground));
+  }
 }
 
-.shad-btn-outline:hover {
-  background-color: hsl(var(--secondary));
-  border-color: hsl(var(--muted-foreground));
+@utility size-full {
+  width: 100%;
+  height: 100%;
 }
 
-.file-upload-area {
-  border: 2px dashed hsl(var(--border));
-  border-radius: var(--radius);
-  padding: 3rem 2rem;
-  text-align: center;
-  background-color: hsla(var(--muted), 0.2);
-  transition: all 0.2s ease;
-  cursor: pointer;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.file-upload-area:hover {
-  border-color: hsl(var(--primary));
-  background-color: hsla(var(--muted), 0.4);
+body {
+  font-family: var(--font-plus-jakarta);
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-outfit);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* Premium Mesh Background */
+body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(circle at 20% 20%, hsl(var(--primary) / 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, hsl(var(--primary) / 0.05) 0%, transparent 40%);
+  z-index: -1;
+  pointer-events: none;
 }

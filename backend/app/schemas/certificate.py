@@ -5,7 +5,7 @@ from datetime import datetime
 class CertificateCreate(BaseModel):
     owner_name: str
     course_name: str
-    organization_id: int
+    organization_id: Optional[int] = None
 
 class CertificateOut(BaseModel):
     id: int

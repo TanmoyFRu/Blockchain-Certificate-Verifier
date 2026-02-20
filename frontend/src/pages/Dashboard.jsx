@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
-import { Layout, LogOut, PlusCircle, CheckCircle, Table as TableIcon, BarChart3, ExternalLink, Trash2, Search, User, Briefcase, Calendar, ShieldCheck, Activity, Globe } from 'lucide-react';
+import { Layout, LogOut, PlusCircle, CheckCircle, Table as TableIcon, BarChart3, ExternalLink, Trash2, Search, User, Briefcase, Calendar, ShieldCheck, Activity, Globe, ShieldAlert } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 import { useNavigate } from 'react-router-dom';
@@ -11,7 +11,6 @@ const Dashboard = () => {
     const navigate = useNavigate();
     const [ownerName, setOwnerName] = useState('');
     const [courseName, setCourseName] = useState('');
-    const [orgId, setOrgId] = useState('1');
     const [status, setStatus] = useState(null);
     const [loading, setLoading] = useState(false);
     const [certs, setCerts] = useState([]);
@@ -20,21 +19,26 @@ const Dashboard = () => {
     const [orgDetails, setOrgDetails] = useState(null);
     const [domain, setDomain] = useState('');
 
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        navigate('/login');
+    };
+
     const fetchOrg = async () => {
-        if (!orgId) return;
         try {
-            const res = await api.get(`/organizations/${orgId}`);
+            const res = await api.get('/organizations/me');
             setOrgDetails(res.data);
             if (res.data.domain) setDomain(res.data.domain);
         } catch (err) {
             console.error('Failed to fetch org details');
+            navigate('/login');
         }
     };
 
     const handleUpdateDomain = async (e) => {
         e.preventDefault();
         try {
-            await api.put(`/organizations/${orgId}`, { domain });
+            await api.put(`/organizations/${orgDetails.id}`, { domain });
             alert("Domain updated successfully!");
         } catch (err) {
             alert("Failed to update domain");
@@ -42,9 +46,8 @@ const Dashboard = () => {
     };
 
     const fetchCerts = async () => {
-        if (!orgId) return;
         try {
-            const res = await api.get(`/certificates/?org_id=${orgId}`);
+            const res = await api.get('/certificates/');
             setCerts(res.data);
         } catch (err) {
             console.error('Failed to fetch certificates');
@@ -52,9 +55,9 @@ const Dashboard = () => {
     };
 
     useEffect(() => {
-        fetchCerts();
         fetchOrg();
-    }, [orgId]);
+        fetchCerts();
+    }, []);
 
     const handleIssue = async (e) => {
         e.preventDefault();
@@ -63,8 +66,7 @@ const Dashboard = () => {
         try {
             const res = await api.post('/certificates/issue', {
                 owner_name: ownerName,
-                course_name: courseName,
-                organization_id: parseInt(orgId)
+                course_name: courseName
             });
             setStatus({ success: true, hash: res.data.cert_hash, tx: res.data.tx_hash });
             fetchCerts();
@@ -85,6 +87,18 @@ const Dashboard = () => {
             setCerts(certs.filter(c => c.id !== id));
         } catch (err) {
             console.error("Failed to delete certificate");
+        }
+    };
+
+    const handleRevoke = async (id, e) => {
+        e.stopPropagation();
+        if (!window.confirm("DANGER: This will permanently revoke the certificate on the blockchain. Are you sure?")) return;
+        try {
+            await api.post(`/certificates/${id}/revoke`);
+            fetchCerts();
+            alert("Certificate revoked successfully");
+        } catch (err) {
+            alert(err.response?.data?.detail || "Failed to revoke certificate");
         }
     };
 
@@ -112,12 +126,11 @@ const Dashboard = () => {
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '2.5rem',
-                backgroundColor: 'hsla(var(--card), 0.3)',
+                backgroundColor: 'hsl(var(--card) / 0.3)',
                 backdropFilter: 'blur(8px)'
             }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 800, padding: '0 0.5rem', letterSpacing: '-0.02em' }}>
-                    <ShieldCheck size={24} style={{ color: 'white' }} />
-                    <span style={{ fontSize: '20px' }}>Veridion</span>
+                <div style={{ display: 'flex', alignItems: 'center', fontWeight: 900, padding: '0 0.5rem', letterSpacing: '-0.04em' }}>
+                    <span style={{ fontSize: '22px' }}>Cyphire</span>
                 </div>
 
                 <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -135,7 +148,7 @@ const Dashboard = () => {
                             style={{
                                 justifyContent: 'flex-start',
                                 gap: '0.85rem',
-                                backgroundColor: activeTab === item.label ? 'hsla(var(--foreground), 0.1)' : 'transparent',
+                                backgroundColor: activeTab === item.label ? 'hsl(var(--foreground) / 0.1)' : 'transparent',
                                 width: '100%',
                                 color: activeTab === item.label ? 'white' : 'hsl(var(--muted-foreground))'
                             }}
@@ -146,7 +159,7 @@ const Dashboard = () => {
                 </nav>
 
                 <div style={{ marginTop: 'auto', paddingTop: '2rem', borderTop: '1px solid hsl(var(--border))' }}>
-                    <button onClick={() => { localStorage.clear(); window.location.href = '/login'; }} className="shad-btn" style={{ width: '100%', gap: '0.75rem', justifyContent: 'flex-start', color: '#ff4444' }}>
+                    <button onClick={handleLogout} className="shad-btn" style={{ width: '100%', gap: '0.75rem', justifyContent: 'flex-start', color: '#ff4444' }}>
                         <LogOut size={18} /> Logout
                     </button>
                 </div>
@@ -155,19 +168,8 @@ const Dashboard = () => {
             <main style={{ flex: 1, padding: '3rem', overflowY: 'auto' }}>
                 <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3.5rem' }}>
                     <div>
-                        <h1 style={{ fontSize: '32px', fontWeight: 800, letterSpacing: '-0.03em' }}>Issuer Dashboard</h1>
+                        <h1 style={{ fontSize: '32px', fontWeight: 800, letterSpacing: '-0.03em' }}>{orgDetails?.name || 'Issuer Dashboard'}</h1>
                         <p style={{ fontSize: '14px', color: 'hsl(var(--muted-foreground))', marginTop: '0.25rem' }}>Manage credentials and view blockchain metrics</p>
-                    </div>
-                    <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', backgroundColor: 'hsla(var(--muted), 0.3)', padding: '0.5rem 1rem', borderRadius: 'var(--radius)', border: '1px solid hsl(var(--border))' }}>
-                        <span style={{ fontSize: '12px', fontWeight: 600, color: 'hsl(var(--muted-foreground))' }}>ORG ID</span>
-                        <input
-                            type="number"
-                            placeholder="ID"
-                            className="shad-input"
-                            style={{ width: '60px', height: '32px', padding: '0 0.5rem', textAlign: 'center' }}
-                            value={orgId}
-                            onChange={(e) => setOrgId(e.target.value)}
-                        />
                     </div>
                 </header>
 
@@ -195,7 +197,7 @@ const Dashboard = () => {
                         <section className="shad-card" style={{ gridColumn: 'span 2', padding: '1.5rem' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2rem', alignItems: 'center' }}>
                                 <h3 style={{ fontSize: '16px', fontWeight: 700 }}>Certificates Distribution</h3>
-                                <div style={{ height: '8px', width: '100px', backgroundColor: 'hsla(var(--primary), 0.1)', borderRadius: '4px', overflow: 'hidden' }}>
+                                <div style={{ height: '8px', width: '100px', backgroundColor: 'hsl(var(--primary) / 0.1)', borderRadius: '4px', overflow: 'hidden' }}>
                                     <div style={{ height: '100%', width: '70%', backgroundColor: 'white' }}></div>
                                 </div>
                             </div>
@@ -241,7 +243,7 @@ const Dashboard = () => {
                                     Icon={PlusCircle}
                                     iconPlacement="right"
                                     style={{ marginTop: '1rem', height: '48px', width: '100%', borderRadius: '12px', fontWeight: 800 }}
-                                    disabled={loading || !orgId}
+                                    disabled={loading}
                                 >
                                     {loading ? 'Processing Attestation...' : 'Confirm Issuance'}
                                 </Button>
@@ -304,7 +306,7 @@ const Dashboard = () => {
                                                             width: '32px',
                                                             height: '32px',
                                                             borderRadius: '8px',
-                                                            backgroundColor: 'hsla(var(--foreground), 0.05)',
+                                                            backgroundColor: 'hsl(var(--foreground) / 0.05)',
                                                             display: 'flex',
                                                             alignItems: 'center',
                                                             justifyContent: 'center',
@@ -315,6 +317,9 @@ const Dashboard = () => {
                                                             {cert.owner_name[0]}
                                                         </div>
                                                         <span style={{ fontWeight: 600 }}>{cert.owner_name}</span>
+                                                        {cert.revoked && (
+                                                            <span style={{ marginLeft: '0.5rem', fontSize: '10px', backgroundColor: '#ff4444', color: 'white', padding: '1px 6px', borderRadius: '4px', fontWeight: 900 }}>REVOKED</span>
+                                                        )}
                                                     </div>
                                                 </td>
                                                 <td style={{ padding: '1.25rem 1rem', color: 'hsl(var(--muted-foreground))' }}>{cert.course_name}</td>
@@ -327,13 +332,25 @@ const Dashboard = () => {
                                                             onClick={(e) => { e.stopPropagation(); navigate(`/verify?hash=${cert.cert_hash}`); }}
                                                             className="shad-btn shad-btn-outline"
                                                             style={{ padding: '0.5rem', width: '36px', height: '36px' }}
+                                                            title="View Certificate"
                                                         >
                                                             <ExternalLink size={14} />
                                                         </button>
+                                                        {!cert.revoked && (
+                                                            <button
+                                                                onClick={(e) => handleRevoke(cert.id, e)}
+                                                                className="shad-btn shad-btn-outline"
+                                                                style={{ padding: '0.5rem', width: '36px', height: '36px', color: '#f59e0b' }}
+                                                                title="Revoke Certificate"
+                                                            >
+                                                                <ShieldAlert size={14} />
+                                                            </button>
+                                                        )}
                                                         <button
                                                             onClick={(e) => handleDelete(cert.id, e)}
                                                             className="shad-btn shad-btn-outline"
                                                             style={{ padding: '0.5rem', width: '36px', height: '36px', color: '#ff4444' }}
+                                                            title="Delete (Local only)"
                                                         >
                                                             <Trash2 size={14} />
                                                         </button>
@@ -380,7 +397,6 @@ const Dashboard = () => {
                                 <Button
                                     type="submit"
                                     style={{ marginTop: '1rem', height: '48px', width: '100%', borderRadius: '12px', fontWeight: 800 }}
-                                    disabled={!orgId}
                                 >
                                     Save Domain Configuration
                                 </Button>

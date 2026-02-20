@@ -67,3 +67,20 @@ typechain-types/
 contracts/artifacts/
 contracts/cache/
 *~
+
+# General
+node_modules/
+dist/
+build/
+*.log
+*.sqlite
+*.db
+
+# Backend Storage
+backend/storage/*
+!backend/storage/.gitkeep
+backend/BACKEND_IMPROVEMENTS.md
+
+# MinIO
+backend/minio_data/
+.minio.sys/

@@ -8,6 +8,10 @@ from app.config.settings import settings
 class MinioService:
     def __init__(self):
         self.bucket = settings.MINIO_BUCKET_NAME
+        self.client = None
+        self._connect()
+
+    def _connect(self):
         try:
             self.client = Minio(
                 settings.MINIO_ENDPOINT,
@@ -15,19 +19,18 @@ class MinioService:
                 secret_key=settings.MINIO_SECRET_KEY,
                 secure=settings.MINIO_SECURE
             )
-            # Check if bucket exists
             if not self.client.bucket_exists(self.bucket):
                 self.client.make_bucket(self.bucket)
-                print(f"Bucket '{self.bucket}' created") # Added this print statement back
+                print(f"Bucket '{self.bucket}' created")
         except Exception as e:
             print(f"MinIO Connection Warning: {e}")
             self.client = None
 
-    # _ensure_bucket_exists method is removed as its logic is integrated into __init__
-
     def upload_file(self, file_path: str, object_name: str):
         if not self.client:
-            # Fallback to local storage
+            self._connect()
+            
+        if not self.client:
             try:
                 dest_path = os.path.join("storage", self.bucket, object_name)
                 os.makedirs(os.path.dirname(dest_path), exist_ok=True)
@@ -43,19 +46,23 @@ class MinioService:
                 self.bucket, object_name, file_path
             )
             return object_name
-        except S3Error as e:
+        except Exception as e:
             print(f"Failed to upload file to MinIO: {e}")
+            # Reset client on connection error to trigger reconnection attempt next time
+            self.client = None
             raise e
 
     def get_file_url(self, object_name: str) -> str:
-        """Generates a presigned URL for the object."""
         if not self.client:
-             # Return local URL
+            self._connect()
+
+        if not self.client:
              return f"http://localhost:8000/storage/{self.bucket}/{object_name}"
         try:
             return self.client.presigned_get_object(self.bucket, object_name)
         except Exception as e:
             print(f"Failed to generate presigned URL: {e}")
+            self.client = None # Reset on error
             return ""
 
 minio_service = MinioService()

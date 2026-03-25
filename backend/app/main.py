@@ -10,7 +10,7 @@ app = FastAPI(title="Cyphire API", version="1.0.0")
 @app.on_event("startup")
 def startup_event():
     print("Starting Cyphire API...")
-    # Base.metadata.create_all(bind=engine)  # Replaced with Alembic migrations
+    Base.metadata.create_all(bind=engine)
     print("Ready.")
 
 from fastapi.middleware.cors import CORSMiddleware

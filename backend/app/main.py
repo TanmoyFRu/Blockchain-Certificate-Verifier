@@ -10,11 +10,8 @@ app = FastAPI(title="Cyphire API", version="1.0.0")
 @app.on_event("startup")
 def startup_event():
     print("Starting Cyphire API...")
-    try:
-        Base.metadata.create_all(bind=engine)
-        print("Database initialized.")
-    except Exception as e:
-        print(f"Database Initialization Error: {e}")
+    # Base.metadata.create_all(bind=engine)  # Replaced with Alembic migrations
+    print("Ready.")
 
 from fastapi.middleware.cors import CORSMiddleware
 

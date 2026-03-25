@@ -7,7 +7,7 @@ from app.models.certificate import Certificate
 from app.models.organization import Organization
 from app.services.certificate_service import generate_certificate_pdf, get_file_hash, get_content_hash
 from app.services.blockchain_service import blockchain_service
-from app.services.minio_service import minio_service
+from app.services.storage_service import storage_service
 from app.services.auth_service import get_current_user
 
 router = APIRouter(prefix="/certificates", tags=["Certificates"])
@@ -30,10 +30,7 @@ def issue_certificate(data: CertificateCreate, db: Session = Depends(get_db), cu
         
         file_name = os.path.basename(pdf_path)
         minio_object_name = f"certs/{file_name}"
-        try:
-             minio_service.upload_file(pdf_path, minio_object_name)
-        except Exception as e:
-            print(f"Warning: MinIO upload failed: {e}")
+        stored_path = storage_service.upload_file(pdf_path, minio_object_name)
 
         tx_hash = blockchain_service.issue_on_chain(cert_hash)
 
@@ -42,7 +39,7 @@ def issue_certificate(data: CertificateCreate, db: Session = Depends(get_db), cu
             owner_name=data.owner_name,
             course_name=data.course_name,
             issued_by=org.id,
-            storage_url=minio_object_name, 
+            storage_url=stored_path, 
             tx_hash=tx_hash
         )
         db.add(new_cert)
@@ -103,10 +100,7 @@ def verify_certificate(cert_hash: str, db: Session = Depends(get_db)):
     
     pdf_url = ""
     if cert.storage_url:
-        if cert.storage_url.startswith("certs/"):
-             pdf_url = minio_service.get_file_url(cert.storage_url)
-        else:
-             pdf_url = cert.storage_url
+        pdf_url = storage_service.get_file_url(cert.storage_url)
 
     status = {
         "local_record": cert,

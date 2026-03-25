@@ -1,7 +1,35 @@
-
 version: '3.8'
 
 services:
+  backend:
+    build:
+      context: ./backend
+    container_name: certverifier-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./storage/cyphire.db
+      - FRONTEND_URL=http://localhost:3000
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - MINIO_SECURE=false
+    volumes:
+      - storage_data:/app/storage
+    depends_on:
+      - minio
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        - VITE_API_URL=${VITE_API_URL:-http://localhost:8000}
+    container_name: certverifier-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
   minio:
     image: minio/minio:latest
     container_name: certverifier-minio
@@ -18,3 +46,4 @@ services:
 
 volumes:
   minio_data:
+  storage_data:

@@ -46,27 +46,17 @@ const buttonVariants = cva(
     }
 );
 
-interface IconProps {
-    Icon: React.ElementType;
-    iconPlacement: "left" | "right";
-}
-
-interface IconRefProps {
-    Icon?: never;
-    iconPlacement?: undefined;
-}
-
 export interface ButtonProps
     extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
     asChild?: boolean;
+    Icon?: React.ElementType;
+    iconPlacement?: "left" | "right";
 }
-
-export type ButtonIconProps = IconProps | IconRefProps;
 
 const Button = React.forwardRef<
     HTMLButtonElement,
-    ButtonProps & ButtonIconProps
+    ButtonProps
 >(
     (
         {
@@ -76,6 +66,7 @@ const Button = React.forwardRef<
             asChild = false,
             Icon,
             iconPlacement,
+            children,
             ...props
         },
         ref
@@ -92,7 +83,7 @@ const Button = React.forwardRef<
                         <Icon />
                     </div>
                 )}
-                <Slottable>{props.children}</Slottable>
+                <Slottable>{children}</Slottable>
                 {Icon && iconPlacement === "right" && (
                     <div className="w-0 translate-x-[100%] pl-0 opacity-0 transition-all duration-200 group-hover:w-5 group-hover:translate-x-0 group-hover:pl-2 group-hover:opacity-100">
                         <Icon />

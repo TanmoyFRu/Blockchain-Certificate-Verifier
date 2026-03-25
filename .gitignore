@@ -28,7 +28,6 @@ htmlcov/
 
 # Poetry
 .venv
-poetry.lock
 secondary.lock
 
 # Environment / Secret

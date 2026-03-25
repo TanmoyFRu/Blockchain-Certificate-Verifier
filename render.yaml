@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: cyphire-backend
+    env: python
+    buildCommand: "poetry install --without dev"
+    rootDir: "backend"
+    startCommand: "poetry run alembic upgrade head && poetry run uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: MINIO_ENDPOINT
+        sync: false
+      - key: MINIO_ACCESS_KEY
+        sync: false
+      - key: MINIO_SECRET_KEY
+        sync: false
+      - key: MINIO_SECURE
+        value: "true"
+      - key: RPC_URL
+        sync: false
+      - key: PRIVATE_KEY
+        sync: false
+      - key: CONTRACT_ADDRESS
+        sync: false

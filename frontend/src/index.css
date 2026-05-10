@@ -228,9 +228,10 @@ body::before {
   z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(ellipse at 25% 20%, rgba(26, 5, 51, 0.7) 0%, transparent 55%),
-    radial-gradient(ellipse at 75% 80%, rgba(13, 31, 79, 0.6) 0%, transparent 55%),
-    radial-gradient(ellipse at 50% 50%, rgba(15, 10, 35, 0.4) 0%, transparent 70%);
+    radial-gradient(ellipse at 20% 50%, rgba(43, 88, 118, 0.4) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(78, 67, 118, 0.35) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 100%, rgba(30, 60, 114, 0.3) 0%, transparent 50%),
+    linear-gradient(to top, #1e3c72 0%, #1e3c72 1%, #2a5298 100%);
   animation: gradient-drift 12s ease-in-out infinite alternate;
 }
 

@@ -1,29 +1,31 @@
+import os
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from app.db.database import Base, engine
+from app.config.settings import settings
 from app.routes import auth, certificates, organizations
 import app.models.user
 import app.models.organization
 import app.models.certificate
 
-app = FastAPI(title="Cyphire API", version="1.0.0")
-
-@app.on_event("startup")
-def startup_event():
+@asynccontextmanager
+async def lifespan(app):
     print("Starting Cyphire API...")
     Base.metadata.create_all(bind=engine)
     print("Ready.")
+    yield
 
-from fastapi.middleware.cors import CORSMiddleware
+app = FastAPI(title="Cyphire API", version="1.0.0", lifespan=lifespan)
 
 origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    settings.FRONTEND_URL,
 ]
-
-from fastapi.staticfiles import StaticFiles
-import os
 
 app.add_middleware(
     CORSMiddleware,

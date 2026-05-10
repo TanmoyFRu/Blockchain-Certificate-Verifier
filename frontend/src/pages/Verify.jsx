@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { ShieldCheck, Database, Zap, Upload, ArrowRight, Check, Globe, FileText, Lock, Cpu, Network, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -19,6 +19,7 @@ const Verify = () => {
     const [error, setError] = useState(null);
     const fileInputRef = useRef(null);
     const location = useLocation();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const params = new URLSearchParams(location.search);
@@ -81,7 +82,7 @@ const Verify = () => {
                 zIndex: 50
             }}>
                 <button
-                    onClick={() => window.location.href = '/login'}
+                    onClick={() => navigate('/login')}
                     onMouseEnter={e => {
                         e.currentTarget.style.background = 'rgba(255,255,255,0.12)';
                         e.currentTarget.style.boxShadow = '0 0 0 1px rgba(255,255,255,0.25), 0 0 16px rgba(255,255,255,0.08)';

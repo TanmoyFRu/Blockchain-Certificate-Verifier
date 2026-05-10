@@ -6,6 +6,7 @@ class UserCreate(BaseModel):
     password: str
     role: Optional[str] = "admin"
     organization_id: Optional[int] = None
+    organization_name: Optional[str] = None
 
 class UserOut(BaseModel):
     id: int

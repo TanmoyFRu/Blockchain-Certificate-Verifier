@@ -387,7 +387,7 @@ const Verify = () => {
                             { icon: <Cpu />, title: 'Smart Contracts', desc: 'Automated logic execution ensures compliance and removes manual verification bottlenecks.' },
                             { icon: <Network />, title: 'Global Consensus', desc: 'Distributed ledger technology ensures your data is available and verifiable 24/7 globally.' }
                         ].map((feature, i) => (
-                            <div key={i} className="min-h-[14rem] relative h-full rounded-2xl p-[1px]">
+                            <div key={i} className="min-h-[14rem] relative h-full rounded-2xl p-[2px]">
                                 <GlowingEffect
                                     spread={40}
                                     glow={true}
@@ -396,7 +396,7 @@ const Verify = () => {
                                     inactiveZone={0.01}
                                     borderWidth={3}
                                 />
-                                <div className="relative flex h-full flex-col gap-4 overflow-hidden rounded-xl bg-background p-8 shadow-sm dark:shadow-[0px_0px_27px_0px_rgba(45,45,45,0.3)] md:p-10">
+                                <div className="relative flex h-full flex-col gap-5 overflow-hidden rounded-xl bg-background p-10 shadow-sm dark:shadow-[0px_0px_27px_0px_rgba(45,45,45,0.3)] md:p-12">
                                     <div className="w-fit rounded-lg border-[0.75px] border-white/10 bg-white/5 p-2" style={{ color: 'rgba(255,255,255,0.8)' }}>
                                         {feature.icon}
                                     </div>

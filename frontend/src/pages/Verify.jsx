@@ -396,7 +396,7 @@ const Verify = () => {
                                     inactiveZone={0.01}
                                     borderWidth={3}
                                 />
-                                <div className="relative flex h-full flex-col gap-4 overflow-hidden rounded-xl bg-background p-6 shadow-sm dark:shadow-[0px_0px_27px_0px_rgba(45,45,45,0.3)] md:p-6">
+                                <div className="relative flex h-full flex-col gap-4 overflow-hidden rounded-xl bg-background p-8 shadow-sm dark:shadow-[0px_0px_27px_0px_rgba(45,45,45,0.3)] md:p-10">
                                     <div className="w-fit rounded-lg border-[0.75px] border-white/10 bg-white/5 p-2" style={{ color: 'rgba(255,255,255,0.8)' }}>
                                         {feature.icon}
                                     </div>

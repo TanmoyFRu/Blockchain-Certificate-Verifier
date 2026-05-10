@@ -28,6 +28,6 @@ class StorageService:
                 pass
         
         filename = os.path.basename(storage_url)
-        return f"{settings.FRONTEND_URL}/storage/{filename}"
+        return f"/storage/{filename}"
 
 storage_service = StorageService()

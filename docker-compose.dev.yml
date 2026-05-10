@@ -1,0 +1,41 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: cyphire-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: cyphire
+      POSTGRES_PASSWORD: cyphire_secret
+      POSTGRES_DB: cert_verifier
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cyphire -d cert_verifier"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  minio:
+    image: minio/minio:latest
+    container_name: cyphire-minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: cyphire_minio
+      MINIO_ROOT_PASSWORD: cyphire_minio_secret
+    volumes:
+      - miniodata:/data
+    command: server --console-address ":9001" /data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  miniodata:

@@ -24,7 +24,7 @@ def get_my_organization(db: Session = Depends(get_db), current_user_id: int = De
     return org
 
 @router.post("/", response_model=OrganizationOut)
-def create_organization(data: OrganizationCreate, db: Session = Depends(get_db)):
+def create_organization(data: OrganizationCreate, db: Session = Depends(get_db), current_user_id: int = Depends(get_current_user)):
     existing = db.query(Organization).filter(Organization.name == data.name).first()
     if existing:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Organization already exists")

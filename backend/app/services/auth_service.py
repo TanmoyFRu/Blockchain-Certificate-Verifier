@@ -48,11 +48,24 @@ def register_user(db: Session, data: UserCreate) -> User:
     existing = db.query(User).filter(User.email == data.email).first()
     if existing:
         raise ValueError("Email already registered")
+
+    org_id = data.organization_id
+    if data.organization_name and not org_id:
+        from app.models.organization import Organization
+        existing_org = db.query(Organization).filter(Organization.name == data.organization_name).first()
+        if existing_org:
+            org_id = existing_org.id
+        else:
+            org = Organization(name=data.organization_name)
+            db.add(org)
+            db.flush()
+            org_id = org.id
+
     user = User(
         email=data.email,
         password_hash=hash_password(data.password),
         role=data.role,
-        organization_id=data.organization_id,
+        organization_id=org_id,
     )
     db.add(user)
     db.commit()

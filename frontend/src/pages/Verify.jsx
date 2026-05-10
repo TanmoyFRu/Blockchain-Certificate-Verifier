@@ -7,26 +7,51 @@ import { Button } from '../components/ui/button';
 import { GlowingEffect } from '../components/ui/glowing-effect';
 import { cn } from '../lib/utils';
 import Footer from '../components/ui/footer';
-import { MeshGradient } from '../components/ui/background-paper-shaders';
-import { ScrambledTitle } from '../components/ui/modern-animated-hero-section';
+
+const HERO_TITLES = ['Instant Certificate Verification', 'Secure Blockchain Registry', 'Immutable & Trusted'];
+
+const RotatingTitle = ({ items, className }) => {
+    const [index, setIndex] = useState(0);
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setIndex(prev => (prev + 1) % items.length);
+        }, 3000);
+        return () => clearInterval(timer);
+    }, [items.length]);
+
+    return (
+        <AnimatePresence mode="wait">
+            <motion.h1
+                key={index}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.4, ease: 'easeInOut' }}
+                className={className}
+            >
+                {items[index]}
+            </motion.h1>
+        </AnimatePresence>
+    );
+};
 
 const Verify = () => {
     const [hash, setHash] = useState('');
     const [file, setFile] = useState(null);
-    const [verifyMode, setVerifyMode] = useState('hash');
-    const [data, setData] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [data, setData] = useState(null);
     const [error, setError] = useState(null);
+    const [verifyMode, setVerifyMode] = useState('hash');
     const fileInputRef = useRef(null);
     const location = useLocation();
     const navigate = useNavigate();
 
     useEffect(() => {
         const params = new URLSearchParams(location.search);
-        const urlHash = params.get('hash');
-        if (urlHash) {
-            setHash(urlHash);
-            setVerifyMode('hash');
+        const hashParam = params.get('hash');
+        if (hashParam) {
+            setHash(hashParam);
         }
     }, [location]);
 
@@ -63,11 +88,7 @@ const Verify = () => {
 
     return (
         <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden', backgroundColor: 'hsl(var(--background))' }}>
-            <MeshGradient
-                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 0 }}
-                colors={['#1a0533', '#0d1f4f']}
-                speed={0.6}
-            />
+            <div className="verify-gradient-bg" />
             <nav style={{
                 height: '64px',
                 borderBottom: '1px solid hsl(var(--border))',
@@ -135,9 +156,9 @@ const Verify = () => {
                     </div>
 
                     <div style={{ minHeight: '3.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.5rem' }}>
-                        <ScrambledTitle
+                        <RotatingTitle
                             className="text-2xl font-extrabold tracking-tight text-white sm:text-3xl text-center w-full"
-                            items={['Instant Certificate Verification', 'Secure Blockchain Registry', 'Immutable & Trusted']}
+                            items={HERO_TITLES}
                         />
                     </div>
 

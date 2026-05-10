@@ -3,10 +3,10 @@ services:
     image: postgres:16-alpine
     container_name: cyphire-postgres
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
       POSTGRES_USER: cyphire
-      POSTGRES_PASSWORD: cyphire_secret
+      POSTGRES_PASSWORD: YOMjp2c6d857mITU857E4AvNe1eMyEgL
       POSTGRES_DB: cert_verifier
     volumes:
       - pgdata:/var/lib/postgresql/data
@@ -25,7 +25,7 @@ services:
       - "9001:9001"
     environment:
       MINIO_ROOT_USER: cyphire_minio
-      MINIO_ROOT_PASSWORD: cyphire_minio_secret
+      MINIO_ROOT_PASSWORD: AeNyzlxtGtwHAoUeDugYXGZ30JTQpIoE
     volumes:
       - miniodata:/data
     command: server --console-address ":9001" /data

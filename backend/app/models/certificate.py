@@ -12,6 +12,7 @@ class Certificate(Base):
     course_name = Column(String, nullable=False)
     issued_by = Column(Integer, ForeignKey("organizations.id"), nullable=False)
     storage_url = Column(String, nullable=False)
+    file_hash = Column(String, nullable=True, index=True)
     tx_hash = Column(String, nullable=True)
     revoked = Column(Boolean, default=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))

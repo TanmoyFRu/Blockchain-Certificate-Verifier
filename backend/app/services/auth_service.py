@@ -34,7 +34,7 @@ def create_access_token(data: dict) -> str:
 def decode_token(token: str) -> dict:
     return jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
 
-def get_current_user(db: Session = Depends(lambda: None), token: str = Depends(oauth2_scheme)) -> User:
+def get_current_user(token: str = Depends(oauth2_scheme)) -> int:
     try:
         payload = decode_token(token)
         user_id = payload.get("sub")

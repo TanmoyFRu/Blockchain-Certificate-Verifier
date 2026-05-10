@@ -18,7 +18,6 @@ class Settings(BaseSettings):
     MINIO_BUCKET_NAME: str = "certificates"
     MINIO_SECURE: bool = True
 
-    class Config:
-        env_file = ".env"
+    model_config = {"env_file": ".env"}
 
 settings = Settings()

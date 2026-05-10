@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
-import { Layout, LogOut, PlusCircle, CheckCircle, Table as TableIcon, BarChart3, ExternalLink, Trash2, Search, User, Briefcase, Calendar, ShieldCheck, Activity, Globe, ShieldAlert } from 'lucide-react';
+import { Layout, LogOut, PlusCircle, CheckCircle, Table as TableIcon, BarChart3, ExternalLink, Trash2, Search, User, Briefcase, Calendar, ShieldCheck, Activity, Globe, ShieldAlert, Zap } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 import { useNavigate } from 'react-router-dom';
@@ -409,10 +409,6 @@ const Dashboard = () => {
     );
 };
 
-const Zap = ({ size, style }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={style}>
-        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-    </svg>
-);
+
 
 export default Dashboard;

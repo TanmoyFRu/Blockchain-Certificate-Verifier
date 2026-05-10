@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import api from '../services/api';
-import { ShieldCheck, Database, Zap, Upload, ArrowRight, Check, Globe, FileText, Lock, Cpu, Network } from 'lucide-react';
+import { ShieldCheck, Database, Zap, Upload, ArrowRight, Check, Globe, FileText, Lock, Cpu, Network, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../components/ui/button';
 import { GlowingEffect } from '../components/ui/glowing-effect';

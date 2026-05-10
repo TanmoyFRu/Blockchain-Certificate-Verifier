@@ -69,10 +69,7 @@ const Login = () => {
                             </div>
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <label style={{ fontSize: '13px', fontWeight: 700, color: 'hsl(var(--muted-foreground))', letterSpacing: '0.02em' }}>PASSWORD</label>
-                                <span style={{ fontSize: '12px', color: 'white', cursor: 'pointer', fontWeight: 600 }}>Recovery</span>
-                            </div>
                             <div style={{ position: 'relative' }}>
                                 <Lock size={18} style={{ position: 'absolute', left: '1rem', top: '0.85rem', color: 'hsl(var(--muted-foreground))' }} />
                                 <Input
@@ -139,7 +136,7 @@ const Login = () => {
                     </form>
 
                     <p style={{ marginTop: '3rem', textAlign: 'center', fontSize: '14px', color: 'hsl(var(--muted-foreground))', fontWeight: 500 }}>
-                        Restricted Access Center. <span style={{ color: 'white', cursor: 'pointer', fontWeight: 700 }}>Request Credentials</span>
+                        Restricted Access Center.
                     </p>
                 </div>
             </div>

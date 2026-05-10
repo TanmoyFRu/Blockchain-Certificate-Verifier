@@ -202,6 +202,11 @@ const Dashboard = () => {
                                 </div>
                             </div>
                             <div style={{ height: '200px', width: '100%' }}>
+                                {chartData.length < 2 ? (
+                                    <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'hsl(var(--muted-foreground))', fontSize: '14px', fontWeight: 500 }}>
+                                        Issue more certificates to see distribution trends
+                                    </div>
+                                ) : (
                                 <ResponsiveContainer width="100%" height="100%">
                                     <AreaChart data={chartData}>
                                         <defs>
@@ -217,6 +222,7 @@ const Dashboard = () => {
                                         <Area type="monotone" dataKey="issued" stroke="white" strokeWidth={2} fillOpacity={1} fill="url(#colorIssued)" />
                                     </AreaChart>
                                 </ResponsiveContainer>
+                                )}
                             </div>
                         </section>
                     </div>

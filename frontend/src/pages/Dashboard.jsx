@@ -176,9 +176,9 @@ const Dashboard = () => {
                 {(activeTab === 'Overview' || activeTab === 'Analytics') && (
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem', marginBottom: '2.5rem' }}>
                         {[
-                            { label: 'Total Issued', value: certs.length, change: '+12%', icon: <User size={16} /> },
-                            { label: 'Network Uptime', value: '99.9%', change: 'Stable', icon: <Activity size={16} /> },
-                            { label: 'Gas Usage', value: '0.002 MATIC', change: '-4%', icon: <Zap size={16} /> }
+                            { label: 'Total Issued', value: certs.length, change: `${certs.filter(c => !c.revoked).length} active`, icon: <User size={16} /> },
+                            { label: 'Revoked', value: certs.filter(c => c.revoked).length, change: certs.length > 0 ? `${Math.round(certs.filter(c => c.revoked).length / certs.length * 100)}%` : '0%', icon: <ShieldAlert size={16} /> },
+                            { label: 'Active Rate', value: certs.length > 0 ? `${Math.round(certs.filter(c => !c.revoked).length / certs.length * 100)}%` : '--', change: 'of all credentials', icon: <Zap size={16} /> }
                         ].map((stat, i) => (
                             <div key={i} className="shad-card" style={{ padding: '1.5rem' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', alignItems: 'center' }}>
@@ -186,7 +186,7 @@ const Dashboard = () => {
                                     <div style={{ color: 'hsl(var(--muted-foreground))' }}>{stat.icon}</div>
                                 </div>
                                 <div style={{ fontSize: '28px', fontWeight: 800 }}>{stat.value}</div>
-                                <p style={{ fontSize: '12px', color: '#10b981', marginTop: '0.5rem', fontWeight: 600 }}>{stat.change} <span style={{ fontWeight: 400, color: 'hsl(var(--muted-foreground))' }}>from last period</span></p>
+                                <p style={{ fontSize: '12px', color: 'hsl(var(--muted-foreground))', marginTop: '0.5rem', fontWeight: 600 }}>{stat.change}</p>
                             </div>
                         ))}
                     </div>

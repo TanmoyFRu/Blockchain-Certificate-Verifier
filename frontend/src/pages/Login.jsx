@@ -136,7 +136,7 @@ const Login = () => {
                     </form>
 
                     <p style={{ marginTop: '3rem', textAlign: 'center', fontSize: '14px', color: 'hsl(var(--muted-foreground))', fontWeight: 500 }}>
-                        Restricted Access Center.
+                        New organization? <span onClick={() => navigate('/register')} style={{ color: 'white', cursor: 'pointer', fontWeight: 700 }}>Create Account</span>
                     </p>
                 </div>
             </div>

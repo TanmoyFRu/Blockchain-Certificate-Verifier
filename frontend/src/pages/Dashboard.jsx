@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
-import { Layout, LogOut, PlusCircle, CheckCircle, Table as TableIcon, BarChart3, ExternalLink, Trash2, Search, User, Briefcase, Calendar, ShieldCheck, Activity, Globe, ShieldAlert, Zap } from 'lucide-react';
+import { Layout, LogOut, PlusCircle, CheckCircle, Table as TableIcon, BarChart3, ExternalLink, Trash2, Search, User, Briefcase, Calendar, ShieldCheck, Activity, Globe, ShieldAlert, Zap, Copy, Loader2 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-
 import { useNavigate } from 'react-router-dom';
-
 import { Button } from '../components/ui/button';
+import { useToast } from '../hooks/useToast.jsx';
 
 const Dashboard = () => {
     const navigate = useNavigate();
+    const { toast, ToastContainer } = useToast();
     const [ownerName, setOwnerName] = useState('');
     const [courseName, setCourseName] = useState('');
     const [status, setStatus] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [initialLoading, setInitialLoading] = useState(true);
     const [certs, setCerts] = useState([]);
     const [search, setSearch] = useState('');
     const [activeTab, setActiveTab] = useState('Overview');
@@ -39,10 +40,15 @@ const Dashboard = () => {
         e.preventDefault();
         try {
             await api.put(`/organizations/${orgDetails.id}`, { domain });
-            alert("Domain updated successfully!");
+            toast('Domain updated successfully', 'success');
         } catch (err) {
-            alert("Failed to update domain");
+            toast('Failed to update domain', 'error');
         }
+    };
+
+    const copyHash = (hash) => {
+        navigator.clipboard.writeText(hash);
+        toast('Hash copied to clipboard', 'success');
     };
 
     const fetchCerts = async () => {
@@ -55,8 +61,7 @@ const Dashboard = () => {
     };
 
     useEffect(() => {
-        fetchOrg();
-        fetchCerts();
+        Promise.all([fetchOrg(), fetchCerts()]).finally(() => setInitialLoading(false));
     }, []);
 
     const handleIssue = async (e) => {
@@ -81,7 +86,6 @@ const Dashboard = () => {
 
     const handleDelete = async (id, e) => {
         e.stopPropagation();
-        if (!window.confirm("Are you sure you want to delete this certificate?")) return;
         try {
             await api.delete(`/certificates/${id}`);
             setCerts(certs.filter(c => c.id !== id));
@@ -92,13 +96,12 @@ const Dashboard = () => {
 
     const handleRevoke = async (id, e) => {
         e.stopPropagation();
-        if (!window.confirm("DANGER: This will permanently revoke the certificate on the blockchain. Are you sure?")) return;
         try {
             await api.post(`/certificates/${id}/revoke`);
             fetchCerts();
-            alert("Certificate revoked successfully");
+            toast('Certificate revoked successfully', 'success');
         } catch (err) {
-            alert(err.response?.data?.detail || "Failed to revoke certificate");
+            toast(err.response?.data?.detail || 'Failed to revoke certificate', 'error');
         }
     };
 
@@ -166,6 +169,17 @@ const Dashboard = () => {
             </aside>
 
             <main style={{ flex: 1, padding: '3rem', overflowY: 'auto' }}>
+                <ToastContainer />
+                {initialLoading ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                        <div style={{ height: '40px', width: '300px', backgroundColor: 'hsl(var(--muted) / 0.3)', borderRadius: '8px', animation: 'pulse 2s ease-in-out infinite' }} />
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
+                            {[1,2,3].map(i => <div key={i} style={{ height: '120px', backgroundColor: 'hsl(var(--muted) / 0.2)', borderRadius: 'var(--radius)', animation: 'pulse 2s ease-in-out infinite' }} />)}
+                        </div>
+                        <div style={{ height: '300px', backgroundColor: 'hsl(var(--muted) / 0.15)', borderRadius: 'var(--radius)', animation: 'pulse 2s ease-in-out infinite' }} />
+                    </div>
+                ) : (
+                <>
                 <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3.5rem' }}>
                     <div>
                         <h1 style={{ fontSize: '32px', fontWeight: 800, letterSpacing: '-0.03em' }}>{orgDetails?.name || 'Issuer Dashboard'}</h1>
@@ -265,7 +279,17 @@ const Dashboard = () => {
                                     fontSize: '13px',
                                     fontWeight: 500
                                 }}>
-                                    {status.success ? 'Success: Credential recorded on blockchain.' : status.msg}
+                                    {status.success ? (
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                            <span style={{ color: '#34d399', fontWeight: 700 }}>Credential recorded on blockchain</span>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: 'rgba(0,0,0,0.2)', padding: '0.5rem 0.75rem', borderRadius: '6px' }}>
+                                                <span style={{ fontFamily: 'monospace', fontSize: '11px', color: 'hsl(var(--muted-foreground))', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1 }}>{status.hash}</span>
+                                                <button onClick={() => copyHash(status.hash)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'hsl(var(--muted-foreground))', padding: '2px', flexShrink: 0 }}>
+                                                    <Copy size={14} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ) : status.msg}
                                 </div>
                             )}
                         </section>
@@ -410,6 +434,8 @@ const Dashboard = () => {
                         </section>
                     )}
                 </div>
+                </>
+                )}
             </main>
         </div>
     );

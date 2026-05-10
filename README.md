@@ -80,7 +80,7 @@ graph LR
 | Blockchain | Web3.py, Polygon (configurable RPC) |
 | Storage | MinIO (optional) / Local filesystem fallback |
 | Database | SQLite (dev) / PostgreSQL (prod) |
-| PDF Generation | ReportLab |
+| PDF Generation | xhtml2pdf, Jinja2, qrcode |
 
 ---
 
@@ -248,17 +248,22 @@ cd cyphire
 
 ```bash
 cd backend
-python -m venv venv
+python -m venv .venv
 
 # Windows
-venv\Scripts\activate
+.venv\Scripts\activate
 # macOS / Linux
-source venv/bin/activate
+source .venv/bin/activate
 
-pip install -r requirements.txt
+poetry install
 
 # Copy and fill in your .env
 cp .env.example .env
+
+# Start dev services (PostgreSQL + MinIO)
+cd ..
+docker compose -f docker-compose.dev.yml up -d
+cd backend
 
 uvicorn app.main:app --reload --port 8000
 ```

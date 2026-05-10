@@ -7,6 +7,7 @@ import { Button } from '../components/ui/button';
 import { GlowingEffect } from '../components/ui/glowing-effect';
 import { cn } from '../lib/utils';
 import Footer from '../components/ui/footer';
+import { Meteors } from '../components/ui/meteors';
 
 const HERO_TITLES = ['Instant Certificate Verification', 'Secure Blockchain Registry', 'Immutable & Trusted'];
 
@@ -88,7 +89,7 @@ const Verify = () => {
 
     return (
         <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden', backgroundColor: 'hsl(var(--background))' }}>
-            <div className="verify-gradient-bg" />
+            <Meteors number={20} />
             <nav style={{
                 height: '64px',
                 borderBottom: '1px solid hsl(var(--border))',
